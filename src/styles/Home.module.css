@@ -5,6 +5,7 @@
     position: relative;
 }
 .mainContainer {
+    padding-top: 24px;
     display: flex;
     flex-direction: column;
     width: calc(100% - 240px);

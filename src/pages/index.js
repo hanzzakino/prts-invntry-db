@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import Dashboard from '@/components/dashboard/Dashboard'
 import Navbar from '@/components/shared/Navbar'
 import styles from '@/styles/Home.module.css'
+import NewSale from '@/components/sales/NewSale'
 
 export default function Home() {
     const router = useRouter()
@@ -24,6 +25,7 @@ export default function Home() {
                     <Navbar />
                     <div className={styles.mainContainer}>
                         {view === 'dashboard' && <Dashboard />}
+                        {view === 'newsale' && <NewSale />}
                     </div>
                 </main>
             ) : (
