@@ -1,9 +1,9 @@
 .container {
     display: flex;
     flex-direction: column;
+    /* background-color: aqua; */
     width: 100%;
     position: relative;
-    background-color: aquamarine;
 }
 .titleContainer {
     display: flex;
@@ -11,15 +11,10 @@
     padding: 0 24px;
     flex-direction: row;
 }
-
-.formContainer {
-    display: flex;
-    flex-direction: column;
-    margin: 24px;
-    padding: 12px;
-}
-
-.formGroupRow {
-    display: flex;
-    flex-direction: row;
+.tableContainer {
+    /* overflow-y: hidden;
+    overflow-x: scroll; */
+    margin-top: 16px;
+    width: 100%;
+    height: fit-content;
 }

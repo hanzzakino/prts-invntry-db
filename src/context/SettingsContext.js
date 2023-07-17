@@ -3,7 +3,7 @@ import { createContext, useContext, useState } from 'react'
 const SettingsContext = createContext()
 
 export const SettingsContextWrapper = ({ children }) => {
-    const [view, setView] = useState('dashboard')
+    const [view, setView] = useState('')
 
     const setViewPanel = (panel) => {
         setView(panel)

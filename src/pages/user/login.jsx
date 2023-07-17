@@ -1,7 +1,8 @@
 import { useAuthContext } from '@/context/AuthContext'
-import { useSettingsContext } from '@/context/SettingsContext'
+import Head from 'next/head'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
+import generalInfo from '../../../general-info'
 // import { useEffect } from "react";
 
 export default function Home() {
@@ -16,6 +17,9 @@ export default function Home() {
 
     return (
         <main>
+            <Head>
+                <title>{generalInfo.appName} | Login</title>
+            </Head>
             {!isLoading && !authUser ? (
                 <div>
                     <p>Login</p>

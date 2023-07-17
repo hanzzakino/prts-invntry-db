@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { useLocalStorage } from '../hooks/useLocalStorage'
-const AuthContext = createContext()
 
+const AuthContext = createContext()
 export const AuthContextWrapper = ({ children }) => {
     const [authUser, setAuthUser] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -9,8 +9,8 @@ export const AuthContextWrapper = ({ children }) => {
         useLocalStorage('authUser')
 
     const signIn = async (username, password) => {
+        setIsLoading(true)
         try {
-            setIsLoading(true)
             const hashedPassword = password
             // const hashedPassword = sha256(password);
             let response = await fetch('/api/get-user', {
