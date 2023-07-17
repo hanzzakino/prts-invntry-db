@@ -23,12 +23,14 @@ export default function Navbar() {
                     </button>
                     <button>Sales Record</button>
                     <button>Purchases Record</button>
+                    <button>Expenses Record</button>
                 </div>
                 <div className={styles.navbarViews}>
                     <button onClick={() => router.push('/sales/new-sale')}>
                         New Sale
                     </button>
                     <button>New Purchase</button>
+                    <button>New Expense</button>
                 </div>
                 <div className={styles.navbarFooter}>
                     <button>Settings</button>

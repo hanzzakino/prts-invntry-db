@@ -12,6 +12,7 @@ export default function Inventory({ inventory_db }) {
     const router = useRouter()
     const { authUser, signOut, isLoading } = useAuthContext()
     const { view } = useSettingsContext()
+    const [zoomValue, setZoomValue] = useState(1)
     const [searchText, setSearchText] = useState('')
     const [filterSeach, setFilterSeach] = useState({
         filter: '',
@@ -150,10 +151,31 @@ export default function Inventory({ inventory_db }) {
                                     />
                                 )}
                             </div>
+
+                            <div className={styles.zoomControlContainer}>
+                                <button
+                                    onClick={() =>
+                                        setZoomValue((prev) => prev + 0.2)
+                                    }
+                                >
+                                    +
+                                </button>
+                                <button onClick={() => setZoomValue(1)}>
+                                    Reset Zoom
+                                </button>
+                                <button
+                                    onClick={() =>
+                                        setZoomValue((prev) => prev - 0.2)
+                                    }
+                                >
+                                    -
+                                </button>
+                            </div>
                             <div className={styles.tableContainer}>
                                 <table
-                                    // className="aicsdatatable"
-                                    // style={{ fontSize: zoomValue.toString() + 'rem' }}
+                                    style={{
+                                        fontSize: zoomValue.toString() + 'rem',
+                                    }}
                                     cellSpacing={0}
                                 >
                                     <tbody>
