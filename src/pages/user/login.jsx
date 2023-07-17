@@ -9,6 +9,7 @@ export default function Home() {
     const router = useRouter()
     const { authUser, signIn, isLoading } = useAuthContext()
 
+    // eslint-disable-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (!isLoading && authUser) {
             router.push('/')

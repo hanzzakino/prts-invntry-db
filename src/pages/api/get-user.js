@@ -1,5 +1,6 @@
 import clientPromise from '@/lib/mongodb/mongodb'
 
+/* eslint import/no-anonymous-default-export: [2, {"allowArrowFunction": true}] */
 export default async (req, res) => {
     try {
         const client = await clientPromise

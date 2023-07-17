@@ -19,12 +19,14 @@ export default function Inventory({ inventory_db }) {
         filterValue: '',
     })
 
+    // eslint-disable-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (!authUser) {
             router.push('/user/login')
         }
     }, [authUser])
 
+    // eslint-disable-line react-hooks/exhaustive-deps
     useEffect(() => {
         try {
             if (
