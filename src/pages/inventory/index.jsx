@@ -218,7 +218,10 @@ export default function Inventory({ inventory_db, result_count }) {
                                         type="text"
                                     />
                                 )}
-                                <button onClick={clearSearch}>
+                                <button
+                                    className={styles.clearButton}
+                                    onClick={clearSearch}
+                                >
                                     Clear Search
                                 </button>
                             </div>
