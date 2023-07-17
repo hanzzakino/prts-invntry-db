@@ -36,3 +36,17 @@ form,
 nav {
     border: 1px dashed rgba(0, 0, 0, 0.473);
 }
+
+.pagecontainer {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    position: relative;
+}
+.mainContainer {
+    padding-top: 24px;
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 240px);
+    position: relative;
+}

@@ -1,13 +1,14 @@
 .container {
     display: flex;
+    flex-direction: column;
+    /* background-color: aqua; */
     width: 100%;
-    flex-direction: row;
     position: relative;
 }
-.mainContainer {
-    padding-top: 24px;
+.userInfoContainer {
+    /* background-color: brown; */
     display: flex;
-    flex-direction: column;
-    width: calc(100% - 240px);
-    position: relative;
+    justify-content: space-between;
+    padding: 0 24px;
+    flex-direction: row;
 }

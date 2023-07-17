@@ -12,9 +12,29 @@
     flex-direction: row;
 }
 .tableContainer {
-    /* overflow-y: hidden;
-    overflow-x: scroll; */
-    margin-top: 16px;
-    width: 100%;
-    height: fit-content;
+    overflow-x: scroll;
+    margin: 24px;
+    padding: 12px;
+}
+
+.tableContainer th {
+    padding: 4px 12px;
+    border: 0.5px solid rgb(92, 92, 92);
+    white-space: nowrap;
+    margin: 0;
+    cursor: pointer;
+}
+.tableContainer th:hover {
+    background-color: rgb(196, 196, 196) !important;
+}
+.tableDataRow td {
+    padding: 4px 12px;
+    border: 0.5px solid rgb(92, 92, 92);
+    white-space: nowrap;
+    margin: 0;
+    cursor: pointer;
+}
+.tableDataRow:hover {
+    background-color: rgb(34, 34, 34) !important;
+    color: white;
 }

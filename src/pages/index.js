@@ -2,11 +2,10 @@ import { useAuthContext } from '@/context/AuthContext'
 import { useSettingsContext } from '@/context/SettingsContext'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
-import Dashboard from '@/components/dashboard/Dashboard'
-import Navbar from '@/components/shared/Navbar'
+
+import Navbar from '@/components/Navbar'
 import styles from '@/styles/Home.module.css'
-import NewSale from '@/components/sales/NewSale'
-import Inventory from '@/components/inventory/Inventory'
+
 import Head from 'next/head'
 import generalInfo from '../../general-info'
 import clientPromise from '@/lib/mongodb/mongodb'
@@ -28,12 +27,72 @@ export default function Home() {
                 <title>{generalInfo.appName}</title>
             </Head>
             {!isLoading && authUser ? (
-                <main className={styles.container}>
+                <main className="pagecontainer">
                     <Navbar />
-                    <div className={styles.mainContainer}>
-                        {view === '' && <Dashboard />}
-                        {view === 'New Sale' && <NewSale />}
-                        {view === 'Inventory' && <Inventory />}
+                    <div className="mainContainer">
+                        <div className={styles.container}>
+                            <div className={styles.userInfoContainer}>
+                                <h1>
+                                    Hello, {authUser.name}{' '}
+                                    {authUser.access === 'admin' && '(Admin)'}
+                                </h1>
+                                <h1>{authUser.branch} BRANCH</h1>
+                            </div>
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                        </div>
                     </div>
                 </main>
             ) : (
