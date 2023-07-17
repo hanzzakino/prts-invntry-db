@@ -28,6 +28,10 @@ input {
     font-size: 1rem;
     padding: 4px 8px;
 }
+select {
+    font-size: 1rem;
+    padding: 4px 8px;
+}
 
 /* Development */
 

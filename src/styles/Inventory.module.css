@@ -38,3 +38,27 @@
     background-color: rgb(34, 34, 34) !important;
     color: white;
 }
+.noStock {
+    background-color: rgb(255, 165, 165);
+}
+.noStock:hover {
+    background-color: rgb(131, 14, 14) !important;
+    color: white !important;
+}
+
+.searchInput {
+    max-width: 320px;
+}
+.filterInput {
+    margin-left: 12px;
+}
+.searchContainer {
+    display: flex;
+    flex-direction: row;
+    margin: 24px;
+    padding: 12px;
+    align-items: center;
+}
+.searchContainer p {
+    margin: 0 12px;
+}
