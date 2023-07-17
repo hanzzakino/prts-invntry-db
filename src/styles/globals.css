@@ -28,9 +28,18 @@ input {
     font-size: 1rem;
     padding: 4px 8px;
 }
+button {
+    font-size: 1rem;
+    padding: 2px 4px;
+
+    cursor: pointer;
+}
 select {
     font-size: 1rem;
     padding: 4px 8px;
+}
+#caretIcon {
+    pointer-events: none;
 }
 
 /* Development */

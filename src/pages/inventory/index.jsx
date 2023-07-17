@@ -7,17 +7,74 @@ import Navbar from '@/components/Navbar'
 import Head from 'next/head'
 import generalInfo from '../../../general-info'
 import clientPromise from '@/lib/mongodb/mongodb'
+import {
+    BsFillCaretUpFill,
+    BsFillCaretDownFill,
+    BsChevronDoubleLeft,
+    BsChevronDoubleRight,
+} from 'react-icons/bs'
 
-export default function Inventory({ inventory_db }) {
+export default function Inventory({ inventory_db, result_count }) {
     const router = useRouter()
     const { authUser, signOut, isLoading } = useAuthContext()
     const { view } = useSettingsContext()
-    const [zoomValue, setZoomValue] = useState(1)
+    const [zoomValue, setZoomValue] = useState(0.8)
     const [searchText, setSearchText] = useState('')
     const [filterSeach, setFilterSeach] = useState({
         filter: '',
         filterValue: '',
     })
+    const [sorter, setSorter] = useState({
+        sort: '',
+        asc: 1,
+    })
+    const [currentPage, setCurrentPage] = useState(1)
+
+    const dataDisplayLimit = 30
+    const paginationLength = 7 //Odd Numbers only
+    const pagrightlen = Math.floor(paginationLength / 2)
+    const totalPage = Math.ceil(result_count / dataDisplayLimit)
+    const pagination = [
+        ...Array(totalPage < paginationLength ? totalPage : paginationLength),
+    ].map((x, i) =>
+        currentPage - pagrightlen - 1 > 0 ? (
+            currentPage - pagrightlen + i <= totalPage ? (
+                <div key={i}>
+                    <a
+                        onClick={() =>
+                            setCurrentPage((prevState) =>
+                                Number(prevState - pagrightlen + i)
+                            )
+                        }
+                        key={i + 'a'}
+                    >
+                        <div
+                            key={i + 'abb'}
+                            className={
+                                currentPage - pagrightlen + i === currentPage &&
+                                styles.selectedPage
+                            }
+                        >
+                            {currentPage - pagrightlen + i}
+                        </div>
+                    </a>
+                </div>
+            ) : (
+                ''
+            )
+        ) : (
+            <div key={i}>
+                <a onClick={() => setCurrentPage(Number(i + 1))} key={i + 'a'}>
+                    <div
+                        key={i + 'abb'}
+                        className={i + 1 === currentPage && styles.selectedPage}
+                    >
+                        {i + 1}
+                    </div>
+                </a>
+            </div>
+        )
+    )
 
     // eslint-disable-line react-hooks/exhaustive-deps
     useEffect(() => {
@@ -29,51 +86,45 @@ export default function Inventory({ inventory_db }) {
     // eslint-disable-line react-hooks/exhaustive-deps
     useEffect(() => {
         try {
-            if (
-                searchText &&
-                (!filterSeach.filter || !filterSeach.filterValue)
-            ) {
-                router.push({
-                    pathname: '/inventory',
-                    query: {
-                        search: encodeURIComponent(searchText),
-                    },
-                })
-            } else if (
-                !searchText &&
-                filterSeach.filter &&
-                filterSeach.filterValue
-            ) {
-                router.push({
-                    pathname: '/inventory',
-                    query: {
-                        filter: filterSeach.filter.toLowerCase(),
-                        filterval: encodeURIComponent(filterSeach.filterValue),
-                    },
-                })
-            } else if (
-                searchText &&
-                filterSeach.filter &&
-                filterSeach.filterValue
-            ) {
-                router.push({
-                    pathname: '/inventory',
-                    query: {
-                        search: searchText,
-                        filter: filterSeach.filter.toLowerCase(),
-                        filterval: encodeURIComponent(filterSeach.filterValue),
-                    },
-                })
-            } else {
-                router.push('/inventory')
-            }
+            router.push({
+                pathname: '/inventory',
+                query: {
+                    page: currentPage,
+                    ...(filterSeach.filter &&
+                        filterSeach.filterValue && {
+                            filter: filterSeach.filter.toLowerCase(),
+                            filterval: encodeURIComponent(
+                                filterSeach.filterValue
+                            ),
+                        }),
+                    ...(searchText && { search: searchText }),
+                    ...(sorter.sort && {
+                        sort: sorter.sort,
+                        asc: sorter.asc,
+                    }),
+                },
+            })
         } catch (e) {
             console.log(e)
         }
-    }, [searchText, filterSeach])
+    }, [searchText, filterSeach, sorter, currentPage])
+
+    const clearSearch = () => {
+        setSearchText('')
+        setFilterSeach({
+            filter: '',
+            filterValue: '',
+        })
+        setCurrentPage(1)
+        setSorter({
+            sort: '',
+            asc: 1,
+        })
+    }
 
     const searchTextChange = (e) => {
         setSearchText(e.target.value.toUpperCase())
+        setCurrentPage(1)
     }
     const searchFilterChange = (e) => {
         if (e.target.id === 'filter') {
@@ -85,6 +136,20 @@ export default function Inventory({ inventory_db }) {
             setFilterSeach((prevState) => ({
                 ...prevState,
                 filterValue: e.target.value.toUpperCase(),
+            }))
+        }
+        setCurrentPage(1)
+    }
+    const sortClick = (e) => {
+        if (e.target.id === sorter.sort) {
+            setSorter((prevState) => ({
+                ...prevState,
+                asc: prevState.asc * -1,
+            }))
+        } else {
+            setSorter((prevState) => ({
+                ...prevState,
+                sort: e.target.id,
             }))
         }
     }
@@ -122,6 +187,7 @@ export default function Inventory({ inventory_db }) {
                             <div className={styles.titleContainer}>
                                 <h1>Inventory</h1>
                             </div>
+
                             {/* <p>{JSON.stringify(inventory_db)}</p> */}
                             <div className={styles.searchContainer}>
                                 <p>Search: </p>
@@ -152,27 +218,68 @@ export default function Inventory({ inventory_db }) {
                                         type="text"
                                     />
                                 )}
+                                <button onClick={clearSearch}>
+                                    Clear Search
+                                </button>
                             </div>
 
-                            <div className={styles.zoomControlContainer}>
-                                <button
-                                    onClick={() =>
-                                        setZoomValue((prev) => prev + 0.2)
-                                    }
-                                >
-                                    +
-                                </button>
-                                <button onClick={() => setZoomValue(1)}>
-                                    Reset Zoom
-                                </button>
-                                <button
-                                    onClick={() =>
-                                        setZoomValue((prev) => prev - 0.2)
-                                    }
-                                >
-                                    -
-                                </button>
+                            <div className={styles.controlContainer}>
+                                <div>
+                                    <button
+                                        onClick={() =>
+                                            setZoomValue((prev) => prev + 0.2)
+                                        }
+                                    >
+                                        +
+                                    </button>
+                                    <button onClick={() => setZoomValue(0.8)}>
+                                        Reset Zoom
+                                    </button>
+                                    <button
+                                        onClick={() =>
+                                            setZoomValue((prev) => prev - 0.2)
+                                        }
+                                    >
+                                        -
+                                    </button>
+                                </div>
+                                <div className={styles.paginationContainer}>
+                                    <button onClick={() => setCurrentPage(1)}>
+                                        <BsChevronDoubleLeft />
+                                    </button>
+                                    <button
+                                        onClick={() =>
+                                            setCurrentPage((prevState) =>
+                                                prevState === 1
+                                                    ? 1
+                                                    : prevState - 1
+                                            )
+                                        }
+                                    >
+                                        Previous
+                                    </button>
+                                    {pagination}
+                                    <button
+                                        onClick={() =>
+                                            setCurrentPage((prevState) =>
+                                                prevState === totalPage
+                                                    ? totalPage
+                                                    : prevState + 1
+                                            )
+                                        }
+                                    >
+                                        Next
+                                    </button>
+                                    <button
+                                        onClick={() =>
+                                            setCurrentPage(totalPage)
+                                        }
+                                    >
+                                        <BsChevronDoubleRight />
+                                    </button>
+                                </div>
                             </div>
+
                             <div className={styles.tableContainer}>
                                 <table
                                     style={{
@@ -182,14 +289,145 @@ export default function Inventory({ inventory_db }) {
                                 >
                                     <tbody>
                                         <tr>
-                                            <th colSpan={1}>STOCK</th>
-                                            <th colSpan={1}>TYPE</th>
-                                            <th colSpan={1}>NAME</th>
-                                            <th colSpan={1}>BRAND</th>
-                                            <th colSpan={1}>MODEL</th>
-                                            <th colSpan={1}>PRODUCT ID</th>
-                                            <th colSpan={1}>SUPPLIER PRICE</th>
-                                            <th colSpan={1}>STORE PRICE</th>
+                                            <th colSpan={1}>
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="stock"
+                                                >
+                                                    STOCK
+                                                    {sorter.sort === 'stock' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
+                                                </span>
+                                            </th>
+                                            <th colSpan={1}>
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="type"
+                                                >
+                                                    TYPE
+                                                    {sorter.sort === 'type' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
+                                                </span>
+                                            </th>
+                                            <th colSpan={1}>
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="name"
+                                                >
+                                                    NAME
+                                                    {sorter.sort === 'name' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
+                                                </span>
+                                            </th>
+                                            <th colSpan={1}>
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="brand"
+                                                >
+                                                    BRAND
+                                                    {sorter.sort === 'brand' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
+                                                </span>
+                                            </th>
+                                            <th colSpan={1}>
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="model"
+                                                >
+                                                    MODEL
+                                                    {sorter.sort === 'model' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
+                                                </span>
+                                            </th>
+                                            <th colSpan={1}>
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="product_id"
+                                                >
+                                                    PRODUCT_ID
+                                                    {sorter.sort ===
+                                                    'product_id' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
+                                                </span>
+                                            </th>
+                                            <th colSpan={1}>
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="supplier_price"
+                                                >
+                                                    SUPPLIER PRICE
+                                                    {sorter.sort ===
+                                                    'supplier_price' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
+                                                </span>
+                                            </th>
+                                            <th colSpan={1}>
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="store_price"
+                                                >
+                                                    STORE PRICE
+                                                    {sorter.sort ===
+                                                    'store_price' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
+                                                </span>
+                                            </th>
                                         </tr>
                                         {dataRow}
                                     </tbody>
@@ -243,17 +481,59 @@ export async function getServerSideProps({ query }) {
         })
 
         const page = '1'
-        const limit = '3'
-        const asscending = '1' // 1 asscending | -1 descending
-        const sortBy = 'stock'
+        const limit = '30'
+
         const data_fetched = await data
-            .sort({ [sortBy]: Number(asscending) })
-            .skip(Number(page) > 0 ? (Number(page) - 1) * Number(limit) : 0)
+            .sort(
+                query.sort ? { [query.sort]: Number(query.asc) } : { name: 1 }
+            )
+            .skip(
+                Number(query.page) > 0
+                    ? (Number(query.page) - 1) * Number(limit)
+                    : 0
+            )
             .limit(Number(limit))
             .toArray()
 
+        const datacount = await db.collection('inventory').countDocuments({
+            $and: [
+                query.filter
+                    ? {
+                          [query.filter]: {
+                              $regex: '^' + query.filterval,
+                          },
+                      }
+                    : {},
+                query.search
+                    ? {
+                          $or: [
+                              {
+                                  name: {
+                                      $regex: '^' + query.search,
+                                  },
+                              },
+                              {
+                                  model: {
+                                      $regex: '^' + query.search,
+                                  },
+                              },
+                              {
+                                  brand: {
+                                      $regex: '^' + query.search,
+                                  },
+                              },
+                          ],
+                      }
+                    : {},
+            ],
+        })
+
         return {
-            props: { inventory_db: JSON.parse(JSON.stringify(data_fetched)) },
+            props: {
+                inventory_db: JSON.parse(JSON.stringify(data_fetched)),
+                result_count: datacount,
+                query: JSON.parse(JSON.stringify(query)),
+            },
         }
     } catch (e) {
         console.log('getServerSideProps error >>>', e)
