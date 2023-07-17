@@ -23,6 +23,8 @@ export default function Home() {
             </Head>
             {!isLoading && !authUser ? (
                 <div>
+                    <h1>Under Development</h1>
+                    <p>Click on Login</p>
                     <p>Login</p>
                     <button onClick={() => signIn('admin', 'admin')}>
                         Login
