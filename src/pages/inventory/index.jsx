@@ -159,7 +159,9 @@ export default function Inventory({ inventory_db, result_count }) {
                 className={
                     styles.tableDataRow +
                     ' ' +
-                    (data.stock === 0 && styles.noStock)
+                    (data.stock === 0 && styles.noStock) +
+                    ' ' +
+                    (index % 2 === 0 && styles.alternateRowColor)
                 }
             >
                 <td key={data.product_id + index + '0'}>

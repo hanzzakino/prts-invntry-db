@@ -76,8 +76,11 @@
     background-color: rgb(34, 34, 34) !important;
     color: white;
 }
+.alternateRowColor {
+    background-color: rgb(240, 240, 240);
+}
 .noStock {
-    background-color: rgb(255, 165, 165);
+    background-color: rgb(255, 151, 151) !important;
 }
 .noStock:hover {
     background-color: rgb(131, 14, 14) !important;

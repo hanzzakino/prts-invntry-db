@@ -122,7 +122,9 @@ export default function Sales({ sales_db, result_count }) {
                 className={
                     styles.tableDataRow +
                     ' ' +
-                    (data.stock === 0 && styles.noStock)
+                    (data.stock === 0 && styles.noStock) +
+                    ' ' +
+                    (index % 2 === 0 && styles.alternateRowColor)
                 }
             >
                 <td key={data.date_sold + index + '01'}>
