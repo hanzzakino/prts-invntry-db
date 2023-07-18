@@ -200,17 +200,21 @@ export default function Sales({ sales_db, result_count }) {
                                 <div>
                                     <ReactDatePicker
                                         selected={startDate}
-                                        onChange={(date) => setStartDate(date)}
+                                        onChange={(date) => {
+                                            setCurrentPage(1)
+                                            setStartDate(date)
+                                        }}
                                         disabled={allTime}
                                     />
                                     <div>
                                         <input
                                             id="allTime"
-                                            onChange={() =>
+                                            onChange={() => {
+                                                setCurrentPage(1)
                                                 setAllTime(
                                                     (prevState) => !prevState
                                                 )
-                                            }
+                                            }}
                                             type="checkbox"
                                             checked={allTime}
                                         />
@@ -614,6 +618,20 @@ export default function Sales({ sales_db, result_count }) {
                                                 </th>
                                             )}
                                         </tr>
+                                        {result_count === 0 && (
+                                            <tr>
+                                                <td
+                                                    style={{
+                                                        height: '100px',
+                                                        fontSize: '1.2rem',
+                                                    }}
+                                                    align="center"
+                                                    colSpan={18}
+                                                >
+                                                    No Record
+                                                </td>
+                                            </tr>
+                                        )}
                                         {dataRow(authUser.access)}
                                     </tbody>
                                 </table>
