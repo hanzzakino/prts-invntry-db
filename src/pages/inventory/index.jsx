@@ -30,7 +30,7 @@ export default function Inventory({ inventory_db, result_count }) {
     })
     const [currentPage, setCurrentPage] = useState(1)
 
-    const dataDisplayLimit = 30
+    const dataDisplayLimit = 20
     const paginationLength = 7 //Odd Numbers only
     const pagrightlen = Math.floor(paginationLength / 2)
     const totalPage = Math.ceil(result_count / dataDisplayLimit)
@@ -183,7 +183,7 @@ export default function Inventory({ inventory_db, result_count }) {
     return (
         <>
             <Head>
-                <title>{generalInfo.appName}</title>
+                <title>{generalInfo.appName} | Inventory</title>
             </Head>
             {!isLoading && authUser ? (
                 <main className="pagecontainer">
@@ -492,9 +492,7 @@ export async function getServerSideProps({ query }) {
             ],
         })
 
-        const page = '1'
-        const limit = '30'
-
+        const limit = '20'
         const data_fetched = await data
             .sort(
                 query.sort ? { [query.sort]: Number(query.asc) } : { name: 1 }
@@ -544,7 +542,6 @@ export async function getServerSideProps({ query }) {
             props: {
                 inventory_db: JSON.parse(JSON.stringify(data_fetched)),
                 result_count: datacount,
-                query: JSON.parse(JSON.stringify(query)),
             },
         }
     } catch (e) {

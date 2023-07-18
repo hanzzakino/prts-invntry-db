@@ -21,7 +21,9 @@ export default function Navbar() {
                     <button onClick={() => router.push('/inventory')}>
                         Inventory
                     </button>
-                    <button>Sales Record</button>
+                    <button onClick={() => router.push('/sales')}>
+                        Sales Record
+                    </button>
                     <button>Purchases Record</button>
                     <button>Expenses Record</button>
                 </div>
