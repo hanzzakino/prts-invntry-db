@@ -18,10 +18,31 @@ export default function Navbar() {
                 </div>
                 <div className={styles.navbarViews}>
                     <button onClick={() => router.push('/')}>Dashboard</button>
-                    <button onClick={() => router.push('/inventory')}>
+                    <button
+                        onClick={() =>
+                            router.push({
+                                pathname: '/inventory',
+                                query: {
+                                    page: 1,
+                                },
+                            })
+                        }
+                    >
                         Inventory
                     </button>
-                    <button onClick={() => router.push('/sales')}>
+                    <button
+                        onClick={() => {
+                            const dateNow = new Date()
+                            dateNow.setHours(0, 0, 0, 0)
+                            router.push({
+                                pathname: '/sales',
+                                query: {
+                                    page: 1,
+                                    date: dateNow.getTime(),
+                                },
+                            })
+                        }}
+                    >
                         Sales Record
                     </button>
                     <button>Purchases Record</button>

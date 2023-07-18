@@ -6,6 +6,8 @@ import Navbar from '@/components/Navbar'
 import Head from 'next/head'
 import generalInfo from '../../../general-info'
 import clientPromise from '@/lib/mongodb/mongodb'
+import ReactDatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 import {
     BsChevronDoubleLeft,
     BsChevronDoubleRight,
@@ -23,7 +25,8 @@ export default function Sales({ sales_db, result_count }) {
         }
     }, [authUser]) // eslint-disable-line react-hooks/exhaustive-deps
     /////////////////////////
-
+    const [startDate, setStartDate] = useState(new Date())
+    const [allTime, setAllTime] = useState(false)
     const [sorter, setSorter] = useState({
         sort: '',
         asc: 1,
@@ -78,6 +81,8 @@ export default function Sales({ sales_db, result_count }) {
 
     useEffect(() => {
         try {
+            const fixedDate = startDate
+            fixedDate.setHours(0, 0, 0, 0)
             router.push({
                 pathname: '/sales',
                 query: {
@@ -86,12 +91,13 @@ export default function Sales({ sales_db, result_count }) {
                         sort: sorter.sort,
                         asc: sorter.asc,
                     }),
+                    ...(!allTime && { date: fixedDate.getTime() }),
                 },
             })
         } catch (e) {
             console.log(e)
         }
-    }, [sorter, currentPage]) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [sorter, currentPage, startDate, allTime]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const sortClick = (e) => {
         if (e.target.id === sorter.sort) {
@@ -108,7 +114,6 @@ export default function Sales({ sales_db, result_count }) {
     }
 
     const [zoomValue, setZoomValue] = useState(0.8)
-    const [dateNow, setDateNow] = useState(new Date(Date.now()))
 
     const dataRow = (accessParam) => {
         return sales_db.map((data, index) => (
@@ -185,8 +190,35 @@ export default function Sales({ sales_db, result_count }) {
                     <div className="mainContainer">
                         <div className={styles.container}>
                             <div className={styles.titleContainer}>
-                                <h1>Sales {result_count}</h1>
-                                <h2>{dateNow.toDateString()}</h2>
+                                <h1>
+                                    {allTime
+                                        ? 'All'
+                                        : startDate.toLocaleDateString()}{' '}
+                                    Sales
+                                </h1>
+
+                                <div>
+                                    <ReactDatePicker
+                                        selected={startDate}
+                                        onChange={(date) => setStartDate(date)}
+                                        disabled={allTime}
+                                    />
+                                    <div>
+                                        <input
+                                            id="allTime"
+                                            onChange={() =>
+                                                setAllTime(
+                                                    (prevState) => !prevState
+                                                )
+                                            }
+                                            type="checkbox"
+                                            checked={allTime}
+                                        />
+                                        <label htmlFor="allTime">
+                                            All records
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
 
                             <div className={styles.controlContainer}>
@@ -605,6 +637,16 @@ export async function getServerSideProps({ query }) {
             {
                 $unwind: { path: '$items' },
             },
+            {
+                $match: query.date
+                    ? {
+                          date_sold: {
+                              $lte: Number(query.date) + 86400000,
+                              $gte: Number(query.date),
+                          },
+                      }
+                    : {},
+            },
         ])
 
         const limit = '20'
@@ -630,6 +672,16 @@ export async function getServerSideProps({ query }) {
                     $unwind: { path: '$items' },
                 },
                 {
+                    $match: query.date
+                        ? {
+                              date_sold: {
+                                  $lte: Number(query.date) + 86400000,
+                                  $gte: Number(query.date),
+                              },
+                          }
+                        : {},
+                },
+                {
                     $count: 'documentCount',
                 },
             ])
@@ -639,7 +691,8 @@ export async function getServerSideProps({ query }) {
             props: {
                 sales_db: JSON.parse(JSON.stringify(data_fetched)),
                 result_count: JSON.parse(JSON.stringify(datacount))[0]
-                    .documentCount,
+                    ? JSON.parse(JSON.stringify(datacount))[0].documentCount
+                    : 0,
             },
         }
     } catch (e) {
