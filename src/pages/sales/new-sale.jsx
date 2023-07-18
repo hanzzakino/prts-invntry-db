@@ -12,12 +12,11 @@ export default function NewSale() {
     const { authUser, signOut, isLoading } = useAuthContext()
     const { view } = useSettingsContext()
 
-    // eslint-disable-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (!authUser) {
             router.push('/user/login')
         }
-    }, [authUser])
+    }, [authUser]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const [dateNow, setDateNow] = useState(new Date(Date.now()))
 

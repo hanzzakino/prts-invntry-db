@@ -76,14 +76,12 @@ export default function Inventory({ inventory_db, result_count }) {
         )
     )
 
-    // eslint-disable-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (!authUser) {
             router.push('/user/login')
         }
-    }, [authUser])
+    }, [authUser]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    // eslint-disable-line react-hooks/exhaustive-deps
     useEffect(() => {
         try {
             router.push({
@@ -107,7 +105,7 @@ export default function Inventory({ inventory_db, result_count }) {
         } catch (e) {
             console.log(e)
         }
-    }, [searchText, filterSeach, sorter, currentPage])
+    }, [searchText, filterSeach, sorter, currentPage]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const clearSearch = () => {
         setSearchText('')
@@ -154,25 +152,33 @@ export default function Inventory({ inventory_db, result_count }) {
         }
     }
 
-    const dataRow = inventory_db.map((data, index) => (
-        <tr
-            key={data.product_id + index}
-            className={
-                styles.tableDataRow + ' ' + (data.stock === 0 && styles.noStock)
-            }
-        >
-            <td key={data.product_id + index + '0'}>
-                {data.stock === 0 ? 'Out of Stock' : data.stock}
-            </td>
-            <td key={data.product_id + index + '1'}>{data.type}</td>
-            <td key={data.product_id + index + '2'}>{data.name}</td>
-            <td key={data.product_id + index + '3'}>{data.brand}</td>
-            <td key={data.product_id + index + '4'}>{data.model}</td>
-            <td key={data.product_id + index + '5'}>{data.product_id}</td>
-            <td key={data.product_id + index + '6'}>{data.supplier_price}</td>
-            <td key={data.product_id + index + '7'}>{data.store_price}</td>
-        </tr>
-    ))
+    const dataRow = (accessParam) => {
+        return inventory_db.map((data, index) => (
+            <tr
+                key={data.product_id + index}
+                className={
+                    styles.tableDataRow +
+                    ' ' +
+                    (data.stock === 0 && styles.noStock)
+                }
+            >
+                <td key={data.product_id + index + '0'}>
+                    {data.stock === 0 ? 'Out of Stock' : data.stock}
+                </td>
+                <td key={data.product_id + index + '1'}>{data.type}</td>
+                <td key={data.product_id + index + '2'}>{data.name}</td>
+                <td key={data.product_id + index + '3'}>{data.brand}</td>
+                <td key={data.product_id + index + '4'}>{data.model}</td>
+                <td key={data.product_id + index + '5'}>{data.product_id}</td>
+                {accessParam === 'admin' && (
+                    <td key={data.product_id + index + '6'}>
+                        {data.supplier_price}
+                    </td>
+                )}
+                <td key={data.product_id + index + '7'}>{data.store_price}</td>
+            </tr>
+        ))
+    }
 
     return (
         <>
@@ -395,24 +401,27 @@ export default function Inventory({ inventory_db, result_count }) {
                                                     )}
                                                 </span>
                                             </th>
-                                            <th colSpan={1}>
-                                                <span
-                                                    onClick={sortClick}
-                                                    id="supplier_price"
-                                                >
-                                                    SUPPLIER PRICE
-                                                    {sorter.sort ===
-                                                    'supplier_price' ? (
-                                                        sorter.asc === -1 ? (
-                                                            <BsFillCaretUpFill id="caretIcon" />
+                                            {authUser.access === 'admin' && (
+                                                <th colSpan={1}>
+                                                    <span
+                                                        onClick={sortClick}
+                                                        id="supplier_price"
+                                                    >
+                                                        SUPPLIER PRICE
+                                                        {sorter.sort ===
+                                                        'supplier_price' ? (
+                                                            sorter.asc ===
+                                                            -1 ? (
+                                                                <BsFillCaretUpFill id="caretIcon" />
+                                                            ) : (
+                                                                <BsFillCaretDownFill id="caretIcon" />
+                                                            )
                                                         ) : (
-                                                            <BsFillCaretDownFill id="caretIcon" />
-                                                        )
-                                                    ) : (
-                                                        ''
-                                                    )}
-                                                </span>
-                                            </th>
+                                                            ''
+                                                        )}
+                                                    </span>
+                                                </th>
+                                            )}
                                             <th colSpan={1}>
                                                 <span
                                                     onClick={sortClick}
@@ -432,7 +441,7 @@ export default function Inventory({ inventory_db, result_count }) {
                                                 </span>
                                             </th>
                                         </tr>
-                                        {dataRow}
+                                        {dataRow(authUser.access)}
                                     </tbody>
                                 </table>
                             </div>

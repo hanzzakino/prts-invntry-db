@@ -9,12 +9,11 @@ export default function Home() {
     const router = useRouter()
     const { authUser, signIn, isLoading } = useAuthContext()
 
-    // eslint-disable-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (!isLoading && authUser) {
             router.push('/')
         }
-    }, [authUser])
+    }, [authUser]) // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <main>
@@ -27,7 +26,10 @@ export default function Home() {
                     <p>Click on Login</p>
                     <p>Login</p>
                     <button onClick={() => signIn('admin', 'admin')}>
-                        Login
+                        Admin Login
+                    </button>
+                    <button onClick={() => signIn('user', 'user')}>
+                        User Login
                     </button>
                 </div>
             ) : (
