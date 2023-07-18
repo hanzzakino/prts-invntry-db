@@ -486,6 +486,11 @@ export async function getServerSideProps({ query }) {
                                       $regex: '^' + query.search,
                                   },
                               },
+                              {
+                                  product_id: {
+                                      $regex: '^' + query.search,
+                                  },
+                              },
                           ],
                       }
                     : {},
@@ -529,6 +534,11 @@ export async function getServerSideProps({ query }) {
                               },
                               {
                                   brand: {
+                                      $regex: '^' + query.search,
+                                  },
+                              },
+                              {
+                                  product_id: {
                                       $regex: '^' + query.search,
                                   },
                               },

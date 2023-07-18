@@ -6,6 +6,12 @@ import Navbar from '@/components/Navbar'
 import Head from 'next/head'
 import generalInfo from '../../../general-info'
 import clientPromise from '@/lib/mongodb/mongodb'
+import {
+    BsChevronDoubleLeft,
+    BsChevronDoubleRight,
+    BsFillCaretUpFill,
+    BsFillCaretDownFill,
+} from 'react-icons/bs'
 
 export default function Sales({ sales_db, result_count }) {
     /////////////////////////
@@ -17,6 +23,89 @@ export default function Sales({ sales_db, result_count }) {
         }
     }, [authUser]) // eslint-disable-line react-hooks/exhaustive-deps
     /////////////////////////
+
+    const [sorter, setSorter] = useState({
+        sort: '',
+        asc: 1,
+    })
+    const [currentPage, setCurrentPage] = useState(1)
+
+    const dataDisplayLimit = 20
+    const paginationLength = 7 //Odd Numbers only
+    const pagrightlen = Math.floor(paginationLength / 2)
+    const totalPage = Math.ceil(result_count / dataDisplayLimit)
+    const pagination = [
+        ...Array(totalPage < paginationLength ? totalPage : paginationLength),
+    ].map((x, i) =>
+        currentPage - pagrightlen - 1 > 0 ? (
+            currentPage - pagrightlen + i <= totalPage ? (
+                <div key={i}>
+                    <a
+                        onClick={() =>
+                            setCurrentPage((prevState) =>
+                                Number(prevState - pagrightlen + i)
+                            )
+                        }
+                        key={i + 'a'}
+                    >
+                        <div
+                            key={i + 'abb'}
+                            className={
+                                currentPage - pagrightlen + i === currentPage &&
+                                styles.selectedPage
+                            }
+                        >
+                            {currentPage - pagrightlen + i}
+                        </div>
+                    </a>
+                </div>
+            ) : (
+                ''
+            )
+        ) : (
+            <div key={i}>
+                <a onClick={() => setCurrentPage(Number(i + 1))} key={i + 'a'}>
+                    <div
+                        key={i + 'abb'}
+                        className={i + 1 === currentPage && styles.selectedPage}
+                    >
+                        {i + 1}
+                    </div>
+                </a>
+            </div>
+        )
+    )
+
+    useEffect(() => {
+        try {
+            router.push({
+                pathname: '/sales',
+                query: {
+                    page: currentPage,
+                    ...(sorter.sort && {
+                        sort: sorter.sort,
+                        asc: sorter.asc,
+                    }),
+                },
+            })
+        } catch (e) {
+            console.log(e)
+        }
+    }, [sorter, currentPage]) // eslint-disable-line react-hooks/exhaustive-deps
+
+    const sortClick = (e) => {
+        if (e.target.id === sorter.sort) {
+            setSorter((prevState) => ({
+                ...prevState,
+                asc: prevState.asc * -1,
+            }))
+        } else {
+            setSorter((prevState) => ({
+                ...prevState,
+                sort: e.target.id,
+            }))
+        }
+    }
 
     const [zoomValue, setZoomValue] = useState(0.8)
     const [dateNow, setDateNow] = useState(new Date(Date.now()))
@@ -120,6 +209,41 @@ export default function Sales({ sales_db, result_count }) {
                                         -
                                     </button>
                                 </div>
+                                <div className={styles.paginationContainer}>
+                                    <button onClick={() => setCurrentPage(1)}>
+                                        <BsChevronDoubleLeft />
+                                    </button>
+                                    <button
+                                        onClick={() =>
+                                            setCurrentPage((prevState) =>
+                                                prevState === 1
+                                                    ? 1
+                                                    : prevState - 1
+                                            )
+                                        }
+                                    >
+                                        Previous
+                                    </button>
+                                    {pagination}
+                                    <button
+                                        onClick={() =>
+                                            setCurrentPage((prevState) =>
+                                                prevState === totalPage
+                                                    ? totalPage
+                                                    : prevState + 1
+                                            )
+                                        }
+                                    >
+                                        Next
+                                    </button>
+                                    <button
+                                        onClick={() =>
+                                            setCurrentPage(totalPage)
+                                        }
+                                    >
+                                        <BsChevronDoubleRight />
+                                    </button>
+                                </div>
                             </div>
                             <div className={styles.tableContainer}>
                                 <table
@@ -131,76 +255,329 @@ export default function Sales({ sales_db, result_count }) {
                                     <tbody>
                                         <tr>
                                             <th colSpan={1}>
-                                                <span id="date_sold">DATE</span>
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="date_sold"
+                                                >
+                                                    DATE
+                                                    {sorter.sort ===
+                                                    'date_sold' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
+                                                </span>
                                             </th>
                                             <th colSpan={1}>
-                                                <span id="customer_name">
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="customer_name"
+                                                >
                                                     CUSTOMER NAME
+                                                    {sorter.sort ===
+                                                    'customer_name' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
                                                 </span>
                                             </th>
                                             <th colSpan={1}>
-                                                <span id="contact_number">
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="contact_number"
+                                                >
                                                     CONTACT NUMBER
+                                                    {sorter.sort ===
+                                                    'contact_number' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
                                                 </span>
                                             </th>
                                             <th colSpan={1}>
-                                                <span id="product_id">
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="items.product_id"
+                                                >
                                                     PRODUCT ID
+                                                    {sorter.sort ===
+                                                    'items.product_id' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
                                                 </span>
                                             </th>
                                             <th colSpan={1}>
-                                                <span id="type">TYPE</span>
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="items.type"
+                                                >
+                                                    TYPE
+                                                    {sorter.sort ===
+                                                    'items.type' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
+                                                </span>
                                             </th>
                                             <th colSpan={1}>
-                                                <span id="price">PRICE</span>
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="items.price"
+                                                >
+                                                    PRICE
+                                                    {sorter.sort ===
+                                                    'items.price' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
+                                                </span>
                                             </th>
                                             <th colSpan={1}>
-                                                <span id="quantity">QTY</span>
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="items.quantity"
+                                                >
+                                                    QTY
+                                                    {sorter.sort ===
+                                                    'items.quantity' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
+                                                </span>
                                             </th>
                                             <th colSpan={1}>
-                                                <span id="change_item">CI</span>
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="items.change_item"
+                                                >
+                                                    CI
+                                                    {sorter.sort ===
+                                                    'items.change_item' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
+                                                </span>
                                             </th>
                                             <th colSpan={1}>
-                                                <span id="return_item">RI</span>
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="items.return_item"
+                                                >
+                                                    RI
+                                                    {sorter.sort ===
+                                                    'items.return_item' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
+                                                </span>
                                             </th>
                                             <th colSpan={1}>
-                                                <span id="amount">AMOUNT</span>
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="items.amount"
+                                                >
+                                                    AMOUNT
+                                                    {sorter.sort ===
+                                                    'items.amount' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
+                                                </span>
                                             </th>
                                             <th colSpan={1}>
-                                                <span id="paid">PAID</span>
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="items.paid"
+                                                >
+                                                    PAID
+                                                    {sorter.sort ===
+                                                    'items.paid' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
+                                                </span>
                                             </th>
                                             <th colSpan={1}>
-                                                <span id="balance">
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="items.balance"
+                                                >
                                                     BALANCE
+                                                    {sorter.sort ===
+                                                    'items.balance' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
                                                 </span>
                                             </th>
                                             <th colSpan={1}>
-                                                <span id="cost">COST</span>
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="items.cost"
+                                                >
+                                                    COST
+                                                    {sorter.sort ===
+                                                    'items.cost' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
+                                                </span>
                                             </th>
                                             <th colSpan={1}>
-                                                <span id="gross_income">
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="items.gross_income"
+                                                >
                                                     GI
+                                                    {sorter.sort ===
+                                                    'items.gross_income' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
                                                 </span>
                                             </th>
                                             <th colSpan={1}>
-                                                <span id="payment_method">
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="items.payment_method"
+                                                >
                                                     PAYMENT METHOD
+                                                    {sorter.sort ===
+                                                    'items.payment_method' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
                                                 </span>
                                             </th>
                                             <th colSpan={1}>
-                                                <span id="delivery">
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="items.delivery"
+                                                >
                                                     DELIVERY
+                                                    {sorter.sort ===
+                                                    'items.delivery' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
                                                 </span>
                                             </th>
                                             <th colSpan={1}>
-                                                <span id="recorded_by">
+                                                <span
+                                                    onClick={sortClick}
+                                                    id="recorded_by"
+                                                >
                                                     RECORDED BY
+                                                    {sorter.sort ===
+                                                    'recorded_by' ? (
+                                                        sorter.asc === -1 ? (
+                                                            <BsFillCaretUpFill id="caretIcon" />
+                                                        ) : (
+                                                            <BsFillCaretDownFill id="caretIcon" />
+                                                        )
+                                                    ) : (
+                                                        ''
+                                                    )}
                                                 </span>
                                             </th>
                                             {authUser.access === 'admin' && (
                                                 <th colSpan={1}>
-                                                    <span id="branch">
+                                                    <span
+                                                        onClick={sortClick}
+                                                        id="branch"
+                                                    >
                                                         BRANCH
+                                                        {sorter.sort ===
+                                                        'branch' ? (
+                                                            sorter.asc ===
+                                                            -1 ? (
+                                                                <BsFillCaretUpFill id="caretIcon" />
+                                                            ) : (
+                                                                <BsFillCaretDownFill id="caretIcon" />
+                                                            )
+                                                        ) : (
+                                                            ''
+                                                        )}
                                                     </span>
                                                 </th>
                                             )}
@@ -230,13 +607,19 @@ export async function getServerSideProps({ query }) {
             },
         ])
 
-        const sort = 'date_sold'
-        const asc = '-1'
-        const page = '1'
         const limit = '20'
+
         const data_fetched = await data
-            .sort(sort ? { [sort]: Number(asc) } : { date_sold: 1 })
-            .skip(Number(page) > 0 ? (Number(page) - 1) * Number(limit) : 0)
+            .sort(
+                query.sort
+                    ? { [query.sort]: Number(query.asc) }
+                    : { date_sold: -1 }
+            )
+            .skip(
+                Number(query.page) > 0
+                    ? (Number(query.page) - 1) * Number(limit)
+                    : 0
+            )
             .limit(Number(limit))
             .toArray()
 

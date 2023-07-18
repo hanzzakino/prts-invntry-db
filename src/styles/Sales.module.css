@@ -20,6 +20,22 @@
     justify-content: space-between;
 }
 
+.paginationContainer {
+    display: flex;
+    flex-direction: row;
+}
+.paginationContainer div > a > div {
+    width: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+}
+.selectedPage {
+    font-weight: 600;
+    border-bottom: 2px black solid;
+}
 .tableContainer {
     overflow-x: scroll;
     margin: 24px;
