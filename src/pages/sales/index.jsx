@@ -21,7 +21,7 @@ export default function Sales({ sales_db, result_count }) {
     const [zoomValue, setZoomValue] = useState(0.8)
     const [dateNow, setDateNow] = useState(new Date(Date.now()))
 
-    const dataRow = () => {
+    const dataRow = (accessParam) => {
         return sales_db.map((data, index) => (
             <tr
                 key={data.items.product_id + index}
@@ -78,6 +78,9 @@ export default function Sales({ sales_db, result_count }) {
                 <td key={data.recorded_by + index + '0h'}>
                     {data.recorded_by}
                 </td>
+                {accessParam === 'admin' && (
+                    <td key={data.branch + index + '0h'}>{data.branch}</td>
+                )}
             </tr>
         ))
     }
@@ -194,8 +197,15 @@ export default function Sales({ sales_db, result_count }) {
                                                     RECORDED BY
                                                 </span>
                                             </th>
+                                            {authUser.access === 'admin' && (
+                                                <th colSpan={1}>
+                                                    <span id="branch">
+                                                        BRANCH
+                                                    </span>
+                                                </th>
+                                            )}
                                         </tr>
-                                        {dataRow()}
+                                        {dataRow(authUser.access)}
                                     </tbody>
                                 </table>
                             </div>
