@@ -4,9 +4,9 @@ import clientPromise from '@/lib/mongodb/mongodb'
 export default async (req, res) => {
     try {
         const client = await clientPromise
-        const db = client.db('aics-db')
+        const db = client.db('inventory-management')
 
-        const get = await db.collection('aics').aggregate(req.body).toArray()
+        const get = await db.collection('inventory').aggregate(req.body).toArray()
 
         res.json(get)
     } catch (e) {
