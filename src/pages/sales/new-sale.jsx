@@ -68,6 +68,28 @@ export default function NewSale({ inventory_db, result_count }) {
             total_balance: totalAmt - totalPd,
         }))
     }, [formContent.items])
+    const editQuantity = (e) => {
+        const dupls = formContent.items.filter(
+            (im) => im.product_id === e.target.id
+        )
+        // console.log('duplicate')
+        const nondupls = formContent.items.filter(
+            (im) => im.product_id !== e.target.id
+        )
+        // console.log(dupls)
+        const newFromDupls = {
+            ...dupls[0],
+            product_id: dupls[0].product_id,
+            type: dupls[0].type,
+            quantity: Number(e.target.value),
+            amount: dupls[0].price * Number(e.target.value),
+            balance: dupls[0].price * Number(e.target.value),
+        }
+        setFormContent((prevState) => ({
+            ...prevState,
+            items: [...nondupls, newFromDupls],
+        }))
+    }
     const addNewItem = (item) => {
         const dupls = formContent.items.filter(
             (im) => im.product_id === item.product_id
@@ -271,6 +293,12 @@ export default function NewSale({ inventory_db, result_count }) {
                                                 'itemlist2b'
                                             }
                                         >
+                                            <input
+                                                type="number"
+                                                value={item.quantity}
+                                                id={item.product_id}
+                                                onChange={editQuantity}
+                                            />
                                             <p
                                                 key={
                                                     item.product_id +
