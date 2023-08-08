@@ -260,6 +260,7 @@ export default function NewSale({ inventory_db, result_count }) {
                                     onBlur={() => setViewResults(false)}
                                     onFocus={() => setViewResults(true)}
                                 >
+                                    <p>Search Item: </p>
                                     <input
                                         className={styles.searchInput}
                                         value={searchText}
@@ -326,29 +327,43 @@ export default function NewSale({ inventory_db, result_count }) {
                                 {/* <p>
                                     {JSON.stringify(formContent.items, null, 4)}
                                 </p> */}
-                                <div className={styles.itemContainer}>
-                                    <span>
-                                        <p>PRODUCT NAME</p>
-                                    </span>
-                                    <div className={styles.itemCost}>
-                                        <p className={styles.price}>PRICE</p>
-                                        <label> </label>
-                                        <span className={styles.qtyInput}>
-                                            QTY
+                                {formContent.total_amount !== 0 ? (
+                                    <div className={styles.itemContainer}>
+                                        <span>
+                                            <p>PRODUCT NAME</p>
                                         </span>
-                                        <p className={styles.amount}>AMOUNT</p>
-                                        <span
-                                            className={styles.fullpayment}
-                                        ></span>
-                                        <span className={styles.payment}>
-                                            PAID
-                                        </span>
-                                        <span className={styles.method}>
-                                            METHOD
-                                        </span>
-                                        <div className={styles.empty1}></div>
+                                        <div className={styles.itemCost}>
+                                            <p className={styles.price}>
+                                                PRICE
+                                            </p>
+                                            <label> </label>
+                                            <span className={styles.qtyInput}>
+                                                QTY
+                                            </span>
+                                            <p className={styles.amount}>
+                                                AMOUNT
+                                            </p>
+                                            <span
+                                                className={styles.fullpayment}
+                                            ></span>
+                                            <span className={styles.payment}>
+                                                PAID
+                                            </span>
+                                            <span className={styles.method}>
+                                                METHOD
+                                            </span>
+                                            <div
+                                                className={styles.empty1}
+                                            ></div>
+                                        </div>
                                     </div>
-                                </div>
+                                ) : (
+                                    <div className={styles.itemContainer}>
+                                        <span>
+                                            <p>NO ITEM</p>
+                                        </span>
+                                    </div>
+                                )}
                                 {formContent.items
                                     .sort((a, b) => {
                                         let fa = a.product_id.toLowerCase(),
@@ -465,29 +480,35 @@ export default function NewSale({ inventory_db, result_count }) {
                                             </div>
                                         </div>
                                     ))}
-                                <div className={styles.itemContainer}>
-                                    <span>
-                                        <p></p>
-                                    </span>
-                                    <div className={styles.itemCost}>
-                                        <p className={styles.price}></p>
-                                        <label></label>
-                                        <span className={styles.qtyInput}>
-                                            TOTAL:
+                                {formContent.total_amount !== 0 && (
+                                    <div className={styles.itemContainer}>
+                                        <span>
+                                            <p></p>
                                         </span>
-                                        <p className={styles.amount}>
-                                            {formContent.total_amount}
-                                        </p>
-                                        <span
-                                            className={styles.fullpayment}
-                                        ></span>
-                                        <span className={styles.payment}>
-                                            {formContent.total_paid}
-                                        </span>
-                                        <span className={styles.method}></span>
-                                        <div className={styles.empty2}></div>
+                                        <div className={styles.itemCost}>
+                                            <p className={styles.price}></p>
+                                            <label></label>
+                                            <span className={styles.qtyInput}>
+                                                TOTAL:
+                                            </span>
+                                            <p className={styles.amount}>
+                                                {formContent.total_amount}
+                                            </p>
+                                            <span
+                                                className={styles.fullpayment}
+                                            ></span>
+                                            <span className={styles.payment}>
+                                                {formContent.total_paid}
+                                            </span>
+                                            <span
+                                                className={styles.method}
+                                            ></span>
+                                            <div
+                                                className={styles.empty2}
+                                            ></div>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                             </form>
                         </div>
                     </div>
