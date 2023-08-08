@@ -85,6 +85,10 @@ export default function NewSale({ inventory_db, result_count }) {
     const searchTextChange = (e) => {
         setSearchText(e.target.value.toUpperCase())
     }
+    const clearSearch = (e) => {
+        e.preventDefault()
+        setSearchText('')
+    }
 
     return (
         <>
@@ -129,6 +133,12 @@ export default function NewSale({ inventory_db, result_count }) {
                                         placeholder="Search"
                                         type="text"
                                     />
+                                    <button
+                                        // className={styles.clearButton}
+                                        onClick={clearSearch}
+                                    >
+                                        Clear Search
+                                    </button>
 
                                     {result_count !== 0 && (
                                         <div
@@ -163,6 +173,9 @@ export default function NewSale({ inventory_db, result_count }) {
                                                         }
                                                         disabled={
                                                             itm.stock === 0
+                                                        }
+                                                        onClick={(e) =>
+                                                            e.preventDefault()
                                                         }
                                                     >
                                                         Add Item
@@ -217,7 +230,7 @@ export async function getServerSideProps({ query }) {
             ],
         })
 
-        const limit = '20'
+        const limit = '10'
         const sort = 'name'
         const asc = '1'
         const page = '1'
