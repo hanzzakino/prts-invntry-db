@@ -365,6 +365,8 @@ export default function NewSale({ inventory_db, result_count }) {
                                                     {item.product_id}
                                                     &nbsp;-&nbsp;
                                                     {item.tempItemDetail.name}
+                                                    &nbsp;-&nbsp;
+                                                    {item.balance}
                                                 </p>
                                             </span>
                                             <div
