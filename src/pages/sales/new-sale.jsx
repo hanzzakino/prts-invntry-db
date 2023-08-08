@@ -33,42 +33,87 @@ export default function NewSale({ inventory_db, result_count }) {
         customer_name: '',
     })
     const { contact_number, customer_name } = formContent
-    const [currentItem, setCurrentItem] = useState({
-        product_id: '',
-        type: '',
-        quantity: 0,
-        returns: 0,
-        change_item: 0,
-        price: 0,
-        amount: 0,
-        paid: 0,
-        balance: 0,
-        cost: 0,
-        gross_income: 0,
-        payment_method: '',
-        delivery_info: [],
-    })
-    const {
-        product_id,
-        type,
-        quantity,
-        returns,
-        change_item,
-        price,
-        amount,
-        paid,
-        balance,
-        cost,
-        gross_income,
-        payment_method,
-        delivery_info,
-    } = currentItem
 
     const onCustomerChange = (e) => {
         setFormContent((prevState) => ({
             ...prevState,
             [e.target.id]: e.target.value,
         }))
+    }
+    const onReset = () => {
+        setFormContent({
+            items: [],
+            contact_number: '',
+            date_sold: null,
+            total_amount: 0,
+            total_paid: 0,
+            total_balance: 0,
+            recorded_by: '',
+            customer_name: '',
+        })
+        setSearchText('')
+    }
+    // const editItem = (item_pid) => {
+    //     let itmToEdit = formContent.items.filter(itm => itm.product_id===item_pid)
+    // }
+    useEffect(() => {
+        let totalAmt = 0
+        formContent.items.forEach((itm) => (totalAmt += itm.amount))
+        let totalPd = 0
+        formContent.items.forEach((itm) => (totalPd += itm.paid))
+        setFormContent((prevState) => ({
+            ...prevState,
+            total_amount: totalAmt,
+            total_paid: totalPd,
+            total_balance: totalAmt - totalPd,
+        }))
+    }, [formContent.items])
+    const addNewItem = (item) => {
+        const dupls = formContent.items.filter(
+            (im) => im.product_id === item.product_id
+        )
+        if (dupls.length > 0) {
+            // console.log('duplicate')
+            const nondupls = formContent.items.filter(
+                (im) => im.product_id !== item.product_id
+            )
+            // console.log(dupls)
+            const newFromDupls = {
+                ...dupls[0],
+                product_id: dupls[0].product_id,
+                type: dupls[0].type,
+                quantity: dupls[0].quantity + 1,
+                amount: item.store_price * (dupls[0].quantity + 1),
+                balance: item.store_price * (dupls[0].quantity + 1),
+            }
+            setFormContent((prevState) => ({
+                ...prevState,
+                items: [...nondupls, newFromDupls],
+            }))
+        } else {
+            setFormContent((prevState) => ({
+                ...prevState,
+                items: [
+                    ...prevState.items,
+                    {
+                        product_id: item.product_id,
+                        type: item.type,
+                        tempItemDetail: item,
+                        quantity: 1,
+                        returns: 0,
+                        change_item: 0,
+                        price: item.store_price,
+                        amount: item.store_price,
+                        paid: 0,
+                        balance: item.store_price,
+                        cost: 0,
+                        gross_income: 0,
+                        payment_method: '',
+                        delivery_info: [],
+                    },
+                ],
+            }))
+        }
     }
 
     useEffect(() => {
@@ -102,11 +147,13 @@ export default function NewSale({ inventory_db, result_count }) {
                     <div className="mainContainer">
                         <div className={styles.container}>
                             <div className={styles.titleContainer}>
-                                <h1>New Sale - {result_count}</h1>
+                                <h1>
+                                    New Sale - {result_count} -{' '}
+                                    {formContent.total_amount}
+                                </h1>
                                 <h2>{dateNow.toDateString()}</h2>
                             </div>
-                            <p>{JSON.stringify(formContent, null, 4)}</p>
-
+                            <button onClick={onReset}>Reset Form</button>
                             <form className={styles.formContainer}>
                                 <h2>Customer Info</h2>
                                 <div className={styles.formGroupRow}>
@@ -126,13 +173,14 @@ export default function NewSale({ inventory_db, result_count }) {
                                     />
                                 </div>
                                 <h2>Items</h2>
-                                <div>
+                                <div
+                                    onBlur={() => setViewResults(false)}
+                                    onFocus={() => setViewResults(true)}
+                                >
                                     <input
                                         className={styles.searchInput}
                                         value={searchText}
                                         onChange={searchTextChange}
-                                        onBlur={() => setViewResults(false)}
-                                        onFocus={() => setViewResults(true)}
                                         placeholder="Search"
                                         type="text"
                                     />
@@ -146,9 +194,11 @@ export default function NewSale({ inventory_db, result_count }) {
                                     {result_count !== 0 && (
                                         <div
                                             className={
-                                                styles.searchResultsContainer
+                                                styles.searchResultsContainer +
+                                                ' ' +
+                                                (!viewResults &&
+                                                    styles.hiddenResults)
                                             }
-                                            hidden={!viewResults}
                                         >
                                             {inventory_db.map((itm, idx) => (
                                                 <div
@@ -178,9 +228,10 @@ export default function NewSale({ inventory_db, result_count }) {
                                                         disabled={
                                                             itm.stock === 0
                                                         }
-                                                        onClick={(e) =>
+                                                        onClick={(e) => {
                                                             e.preventDefault()
-                                                        }
+                                                            addNewItem(itm)
+                                                        }}
                                                     >
                                                         Add Item
                                                     </button>
@@ -188,12 +239,54 @@ export default function NewSale({ inventory_db, result_count }) {
                                             ))}
                                         </div>
                                     )}
-
-                                    <p>
-                                        SampleSampleSampleSampleSampleSampleSampleSampleSampleSampleSample
-                                        SampleSampleSampleSampleSampleSampleSampleSample
-                                    </p>
                                 </div>
+                                <p>{JSON.stringify(formContent, null, 4)}</p>
+                                {formContent.items.map((item, idx) => (
+                                    <div
+                                        className={styles.itemContainer}
+                                        key={item.product_id + idx + 'itemlist'}
+                                    >
+                                        <span
+                                            key={
+                                                item.product_id +
+                                                idx +
+                                                'itemlist2a'
+                                            }
+                                        >
+                                            <p
+                                                key={
+                                                    item.product_id +
+                                                    idx +
+                                                    'itemlist2'
+                                                }
+                                            >
+                                                {item.product_id}&nbsp;-&nbsp;
+                                                {item.tempItemDetail.name}
+                                            </p>
+                                        </span>
+                                        <span
+                                            key={
+                                                item.product_id +
+                                                idx +
+                                                'itemlist2b'
+                                            }
+                                        >
+                                            <p
+                                                key={
+                                                    item.product_id +
+                                                    idx +
+                                                    'itemlist3'
+                                                }
+                                            >
+                                                {item.price}
+                                                {' | '}
+                                                {item.quantity}
+                                                {' | '}
+                                                {item.amount}
+                                            </p>
+                                        </span>
+                                    </div>
+                                ))}
                             </form>
                         </div>
                     </div>
