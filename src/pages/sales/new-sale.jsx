@@ -26,14 +26,13 @@ export default function NewSale({ inventory_db, result_count }) {
         items: [],
         contact_number: '',
         date_sold: null,
-        total_amount: 0,
-        total_paid: 0,
-        total_balance: 0,
+        total_amount: 0.0,
+        total_paid: 0.0,
+        total_balance: 0.0,
         recorded_by: '',
         customer_name: '',
     })
     const { contact_number, customer_name } = formContent
-
     const onCustomerChange = (e) => {
         setFormContent((prevState) => ({
             ...prevState,
@@ -45,9 +44,9 @@ export default function NewSale({ inventory_db, result_count }) {
             items: [],
             contact_number: '',
             date_sold: null,
-            total_amount: 0,
-            total_paid: 0,
-            total_balance: 0,
+            total_amount: 0.0,
+            total_paid: 0.0,
+            total_balance: 0.0,
             recorded_by: '',
             customer_name: '',
         })
@@ -72,6 +71,69 @@ export default function NewSale({ inventory_db, result_count }) {
         const dupls = formContent.items.filter(
             (im) => im.product_id === e.target.id
         )
+        // console.log(dupls[0])
+        if (Number(e.target.value) <= dupls[0].tempItemDetail.stock) {
+            // console.log('duplicate')
+            const nondupls = formContent.items.filter(
+                (im) => im.product_id !== e.target.id
+            )
+            // console.log(dupls)
+            const newFromDupls = {
+                ...dupls[0],
+                product_id: dupls[0].product_id,
+                type: dupls[0].type,
+                quantity:
+                    Number(e.target.value) !== 0
+                        ? Math.abs(Number(e.target.value))
+                        : 1,
+                amount:
+                    dupls[0].price *
+                    (Number(e.target.value) !== 0
+                        ? Math.abs(Number(e.target.value))
+                        : 1),
+                balance:
+                    dupls[0].price *
+                    (Number(e.target.value) !== 0
+                        ? Math.abs(Number(e.target.value))
+                        : 1),
+            }
+            setFormContent((prevState) => ({
+                ...prevState,
+                items: [...nondupls, newFromDupls],
+            }))
+        }
+    }
+    const editPaid = (e) => {
+        const dupls = formContent.items.filter(
+            (im) => im.product_id === e.target.id
+        )
+
+        if (
+            Number(e.target.value) <= dupls[0].amount &&
+            Number(e.target.value) >= 0
+        ) {
+            // console.log('duplicate')
+            const nondupls = formContent.items.filter(
+                (im) => im.product_id !== e.target.id
+            )
+            // console.log(dupls)
+            const newFromDupls = {
+                ...dupls[0],
+                product_id: dupls[0].product_id,
+                type: dupls[0].type,
+                paid: Math.abs(Number(e.target.value)),
+                balance: dupls[0].amount - Math.abs(Number(e.target.value)),
+            }
+            setFormContent((prevState) => ({
+                ...prevState,
+                items: [...nondupls, newFromDupls],
+            }))
+        }
+    }
+    const fullyPay = (e) => {
+        const dupls = formContent.items.filter(
+            (im) => im.product_id === e.target.id
+        )
         // console.log('duplicate')
         const nondupls = formContent.items.filter(
             (im) => im.product_id !== e.target.id
@@ -79,11 +141,8 @@ export default function NewSale({ inventory_db, result_count }) {
         // console.log(dupls)
         const newFromDupls = {
             ...dupls[0],
-            product_id: dupls[0].product_id,
-            type: dupls[0].type,
-            quantity: Number(e.target.value),
-            amount: dupls[0].price * Number(e.target.value),
-            balance: dupls[0].price * Number(e.target.value),
+            paid: e.target.checked ? dupls[0].amount : 0,
+            balance: e.target.checked ? 0 : dupls[0].amount,
         }
         setFormContent((prevState) => ({
             ...prevState,
@@ -126,12 +185,12 @@ export default function NewSale({ inventory_db, result_count }) {
                         change_item: 0,
                         price: item.store_price,
                         amount: item.store_price,
-                        paid: 0,
+                        paid: 0.0,
                         balance: item.store_price,
-                        cost: 0,
-                        gross_income: 0,
-                        payment_method: '',
-                        delivery_info: [],
+                        cost: 0.0,
+                        gross_income: 0.0,
+                        payment_method: 'CASH',
+                        delivery_info: '',
                     },
                 ],
             }))
@@ -171,7 +230,9 @@ export default function NewSale({ inventory_db, result_count }) {
                             <div className={styles.titleContainer}>
                                 <h1>
                                     New Sale - {result_count} -{' '}
-                                    {formContent.total_amount}
+                                    {formContent.total_amount}-{' '}
+                                    {formContent.total_balance}-{' '}
+                                    {formContent.total_paid}
                                 </h1>
                                 <h2>{dateNow.toDateString()}</h2>
                             </div>
@@ -262,59 +323,123 @@ export default function NewSale({ inventory_db, result_count }) {
                                         </div>
                                     )}
                                 </div>
-                                <p>{JSON.stringify(formContent, null, 4)}</p>
-                                {formContent.items.map((item, idx) => (
-                                    <div
-                                        className={styles.itemContainer}
-                                        key={item.product_id + idx + 'itemlist'}
-                                    >
-                                        <span
+                                <p>
+                                    {JSON.stringify(formContent.items, null, 4)}
+                                </p>
+                                {formContent.items
+                                    .sort((a, b) => {
+                                        let fa = a.product_id.toLowerCase(),
+                                            fb = b.product_id.toLowerCase()
+
+                                        if (fa < fb) {
+                                            return -1
+                                        }
+                                        if (fa > fb) {
+                                            return 1
+                                        }
+                                        return 0
+                                    })
+                                    .map((item, idx) => (
+                                        <div
+                                            className={styles.itemContainer}
                                             key={
                                                 item.product_id +
                                                 idx +
-                                                'itemlist2a'
+                                                'itemlist'
                                             }
                                         >
-                                            <p
+                                            <span
                                                 key={
                                                     item.product_id +
                                                     idx +
-                                                    'itemlist2'
+                                                    'itemlist2a'
                                                 }
                                             >
-                                                {item.product_id}&nbsp;-&nbsp;
-                                                {item.tempItemDetail.name}
-                                            </p>
-                                        </span>
-                                        <span
-                                            key={
-                                                item.product_id +
-                                                idx +
-                                                'itemlist2b'
-                                            }
-                                        >
-                                            <input
-                                                type="number"
-                                                value={item.quantity}
-                                                id={item.product_id}
-                                                onChange={editQuantity}
-                                            />
-                                            <p
+                                                <p
+                                                    key={
+                                                        item.product_id +
+                                                        idx +
+                                                        'itemlist2'
+                                                    }
+                                                >
+                                                    {item.product_id}
+                                                    &nbsp;-&nbsp;
+                                                    {item.tempItemDetail.name}
+                                                </p>
+                                            </span>
+                                            <div
                                                 key={
                                                     item.product_id +
                                                     idx +
-                                                    'itemlist3'
+                                                    'itemlist2b'
                                                 }
+                                                className={styles.itemCost}
                                             >
-                                                {item.price}
-                                                {' | '}
-                                                {item.quantity}
-                                                {' | '}
-                                                {item.amount}
-                                            </p>
-                                        </span>
-                                    </div>
-                                ))}
+                                                <p
+                                                    className={styles.price}
+                                                    key={
+                                                        item.product_id +
+                                                        idx +
+                                                        'itemlist3x'
+                                                    }
+                                                >
+                                                    {item.price}
+                                                </p>
+                                                <label
+                                                    htmlFor={item.product_id}
+                                                >
+                                                    x
+                                                </label>
+                                                <input
+                                                    className={styles.qtyInput}
+                                                    type="number"
+                                                    value={item.quantity}
+                                                    id={item.product_id}
+                                                    onChange={editQuantity}
+                                                />
+                                                <p
+                                                    className={styles.amount}
+                                                    key={
+                                                        item.product_id +
+                                                        idx +
+                                                        'itemlist3c'
+                                                    }
+                                                >
+                                                    {item.amount}
+                                                </p>
+                                                <input
+                                                    className={
+                                                        styles.fullpayment
+                                                    }
+                                                    id={item.product_id}
+                                                    onChange={fullyPay}
+                                                    type="checkbox"
+                                                    checked={item.balance === 0}
+                                                />
+                                                <input
+                                                    className={styles.payment}
+                                                    type="number"
+                                                    value={item.paid}
+                                                    id={item.product_id}
+                                                    onChange={editPaid}
+                                                />
+                                                <select
+                                                    className={styles.method}
+                                                    defaultValue={'CASH'}
+                                                >
+                                                    <option value={'CASH'}>
+                                                        CASH
+                                                    </option>
+                                                    <option value={'GCASH'}>
+                                                        GCASH
+                                                    </option>
+                                                    <option value={'OTHER'}>
+                                                        OTHER
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    ))}
                             </form>
                         </div>
                     </div>
