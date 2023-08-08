@@ -20,6 +20,7 @@ export default function NewSale({ inventory_db, result_count }) {
     }, [authUser]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const [dateNow, setDateNow] = useState(new Date(Date.now()))
+    const [viewResults, setViewResults] = useState(false)
     const [searchText, setSearchText] = useState('')
     const [formContent, setFormContent] = useState({
         items: [],
@@ -130,6 +131,8 @@ export default function NewSale({ inventory_db, result_count }) {
                                         className={styles.searchInput}
                                         value={searchText}
                                         onChange={searchTextChange}
+                                        onBlur={() => setViewResults(false)}
+                                        onFocus={() => setViewResults(true)}
                                         placeholder="Search"
                                         type="text"
                                     />
@@ -145,6 +148,7 @@ export default function NewSale({ inventory_db, result_count }) {
                                             className={
                                                 styles.searchResultsContainer
                                             }
+                                            hidden={!viewResults}
                                         >
                                             {inventory_db.map((itm, idx) => (
                                                 <div
