@@ -20,7 +20,7 @@ export default function NewSale({ inventory_db, result_count }) {
     }, [authUser]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const [dateNow, setDateNow] = useState(new Date(Date.now()))
-
+    const [searchText, setSearchText] = useState('')
     const [formContent, setFormContent] = useState({
         items: [],
         contact_number: '',
@@ -70,6 +70,22 @@ export default function NewSale({ inventory_db, result_count }) {
         }))
     }
 
+    useEffect(() => {
+        try {
+            router.push({
+                pathname: '/sales/new-sale',
+                query: {
+                    ...(searchText && { search: searchText }),
+                },
+            })
+        } catch (e) {
+            console.log(e)
+        }
+    }, [searchText]) // eslint-disable-line react-hooks/exhaustive-deps
+    const searchTextChange = (e) => {
+        setSearchText(e.target.value.toUpperCase())
+    }
+
     return (
         <>
             <Head>
@@ -105,7 +121,62 @@ export default function NewSale({ inventory_db, result_count }) {
                                     />
                                 </div>
                                 <h2>Items</h2>
-                                <div></div>
+                                <div>
+                                    <input
+                                        className={styles.searchInput}
+                                        value={searchText}
+                                        onChange={searchTextChange}
+                                        placeholder="Search"
+                                        type="text"
+                                    />
+
+                                    {result_count !== 0 && (
+                                        <div
+                                            className={
+                                                styles.searchResultsContainer
+                                            }
+                                        >
+                                            {inventory_db.map((itm, idx) => (
+                                                <div
+                                                    key={
+                                                        idx +
+                                                        itm.product_id +
+                                                        'res'
+                                                    }
+                                                >
+                                                    <p
+                                                        key={
+                                                            idx +
+                                                            itm.product_id +
+                                                            'res1'
+                                                        }
+                                                    >
+                                                        {itm.name} -{' '}
+                                                        {'Stock:' + itm.stock}
+                                                    </p>
+
+                                                    <button
+                                                        key={
+                                                            idx +
+                                                            itm.product_id +
+                                                            'res'
+                                                        }
+                                                        disabled={
+                                                            itm.stock === 0
+                                                        }
+                                                    >
+                                                        Add Item
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    <p>
+                                        SampleSampleSampleSampleSampleSampleSampleSampleSampleSampleSample
+                                        SampleSampleSampleSampleSampleSampleSampleSample
+                                    </p>
+                                </div>
                             </form>
                         </div>
                     </div>
