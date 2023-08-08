@@ -6,8 +6,9 @@ import { useEffect, useState } from 'react'
 import { useAuthContext } from '@/context/AuthContext'
 import { useRouter } from 'next/router'
 import { useSettingsContext } from '@/context/SettingsContext'
+import clientPromise from '@/lib/mongodb/mongodb'
 
-export default function NewSale() {
+export default function NewSale({ inventory_db, result_count }) {
     const router = useRouter()
     const { authUser, signOut, isLoading } = useAuthContext()
     const { view } = useSettingsContext()
@@ -80,7 +81,7 @@ export default function NewSale() {
                     <div className="mainContainer">
                         <div className={styles.container}>
                             <div className={styles.titleContainer}>
-                                <h1>New Sale</h1>
+                                <h1>New Sale - {result_count}</h1>
                                 <h2>{dateNow.toDateString()}</h2>
                             </div>
                             <p>{JSON.stringify(formContent, null, 4)}</p>
@@ -114,4 +115,79 @@ export default function NewSale() {
             )}
         </>
     )
+}
+
+export async function getServerSideProps({ query }) {
+    try {
+        const client = await clientPromise
+        const db = client.db('inventory-management')
+        const data = await db.collection('inventory').find({
+            $or: [
+                {
+                    name: {
+                        $regex: '^' + query.search,
+                    },
+                },
+                {
+                    model: {
+                        $regex: '^' + query.search,
+                    },
+                },
+                {
+                    brand: {
+                        $regex: '^' + query.search,
+                    },
+                },
+                {
+                    product_id: {
+                        $regex: '^' + query.search,
+                    },
+                },
+            ],
+        })
+
+        const limit = '20'
+        const sort = 'name'
+        const asc = '1'
+        const page = '1'
+        const data_fetched = await data
+            .sort(sort ? { [sort]: Number(asc) } : { name: 1 })
+            .skip(Number(page) > 0 ? (Number(page) - 1) * Number(limit) : 0)
+            .limit(Number(limit))
+            .toArray()
+
+        const datacount = await db.collection('inventory').countDocuments({
+            $or: [
+                {
+                    name: {
+                        $regex: '^' + query.search,
+                    },
+                },
+                {
+                    model: {
+                        $regex: '^' + query.search,
+                    },
+                },
+                {
+                    brand: {
+                        $regex: '^' + query.search,
+                    },
+                },
+                {
+                    product_id: {
+                        $regex: '^' + query.search,
+                    },
+                },
+            ],
+        })
+
+        return {
+            props: {
+                inventory_db: JSON.parse(JSON.stringify(data_fetched)),
+                result_count: datacount,
+            },
+        }
+    } catch (e) {
+        console.log('getServerSideProps error >>>', e)
+    }
 }
