@@ -356,6 +356,9 @@ export default function NewSale({ inventory_db, result_count }) {
                                                 styles.boldContents
                                             }
                                         >
+                                            <div className={styles.itemNo}>
+                                                <p>Item No.</p>
+                                            </div>
                                             <div className={styles.itemInfo}>
                                                 <p>PRODUCT ID</p>
                                             </div>
@@ -419,6 +422,16 @@ export default function NewSale({ inventory_db, result_count }) {
                                                 }
                                             >
                                                 <div
+                                                    className={styles.itemNo}
+                                                    key={
+                                                        item.product_id +
+                                                        idx +
+                                                        'itemlist2f'
+                                                    }
+                                                >
+                                                    <p>{idx}</p>
+                                                </div>
+                                                <div
                                                     className={styles.itemInfo}
                                                     key={
                                                         item.product_id +
@@ -438,7 +451,6 @@ export default function NewSale({ inventory_db, result_count }) {
                                                     >
                                                         {item.product_id}
                                                     </span>
-
                                                     <span
                                                         className={
                                                             styles.itemName2
@@ -501,7 +513,7 @@ export default function NewSale({ inventory_db, result_count }) {
                                                                 item.product_id
                                                             }
                                                         >
-                                                            x
+                                                            &times;&nbsp;&nbsp;
                                                         </label>
                                                         <input
                                                             key={
@@ -672,43 +684,100 @@ export default function NewSale({ inventory_db, result_count }) {
                                             </div>
                                         ))}
                                     {formContent.total_amount !== 0 && (
-                                        <div className={styles.itemContainer}>
-                                            <div className={styles.itemInfo}>
-                                                <p></p>
+                                        <>
+                                            <div
+                                                className={styles.itemContainer}
+                                            >
+                                                <div className={styles.itemNo}>
+                                                    <p></p>
+                                                </div>
+                                                <div
+                                                    className={styles.itemInfo}
+                                                >
+                                                    <p></p>
+                                                </div>
+                                                <div
+                                                    className={styles.itemCost}
+                                                >
+                                                    <div className={styles.ic1}>
+                                                        <p></p>
+                                                    </div>
+                                                    <div className={styles.ic2}>
+                                                        <p>TOTAL:</p>
+                                                    </div>
+                                                    <div className={styles.ic3}>
+                                                        <p></p>
+                                                    </div>
+                                                    <div className={styles.ic4}>
+                                                        <p>
+                                                            {
+                                                                formContent.total_amount
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                    <div className={styles.ic5}>
+                                                        <p></p>
+                                                    </div>
+                                                    <div className={styles.ic6}>
+                                                        <p>
+                                                            {
+                                                                formContent.total_paid
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                    <div className={styles.ic7}>
+                                                        <p></p>
+                                                    </div>
+                                                    <div className={styles.ic8}>
+                                                        <p></p>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className={styles.itemCost}>
-                                                <div className={styles.ic1}>
+                                            <div
+                                                className={styles.itemContainer}
+                                            >
+                                                <div className={styles.itemNo}>
                                                     <p></p>
                                                 </div>
-                                                <div className={styles.ic2}>
-                                                    <p>TOTAL:</p>
-                                                </div>
-                                                <div className={styles.ic3}>
+                                                <div
+                                                    className={styles.itemInfo}
+                                                >
                                                     <p></p>
                                                 </div>
-                                                <div className={styles.ic4}>
-                                                    <p>
-                                                        {
-                                                            formContent.total_amount
-                                                        }
-                                                    </p>
-                                                </div>
-                                                <div className={styles.ic5}>
-                                                    <p></p>
-                                                </div>
-                                                <div className={styles.ic6}>
-                                                    <p>
-                                                        {formContent.total_paid}
-                                                    </p>
-                                                </div>
-                                                <div className={styles.ic7}>
-                                                    <p></p>
-                                                </div>
-                                                <div className={styles.ic8}>
-                                                    <p></p>
+                                                <div
+                                                    className={styles.itemCost}
+                                                >
+                                                    <div className={styles.ic1}>
+                                                        <p></p>
+                                                    </div>
+                                                    <div className={styles.ic2}>
+                                                        <p>BALANCE:</p>
+                                                    </div>
+                                                    <div className={styles.ic3}>
+                                                        <p></p>
+                                                    </div>
+                                                    <div className={styles.ic4}>
+                                                        <p>
+                                                            {
+                                                                formContent.total_balance
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                    <div className={styles.ic5}>
+                                                        <p></p>
+                                                    </div>
+                                                    <div className={styles.ic6}>
+                                                        <p></p>
+                                                    </div>
+                                                    <div className={styles.ic7}>
+                                                        <p></p>
+                                                    </div>
+                                                    <div className={styles.ic8}>
+                                                        <p></p>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </>
                                     )}
                                 </div>
                             </form>
