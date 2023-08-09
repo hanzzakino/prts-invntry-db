@@ -63,7 +63,7 @@
 }
 .itemsContainer {
     width: 100%;
-    padding-bottom: 12px;
+    padding-bottom: 8px;
     overflow-x: scroll;
 }
 .itemContainerEmpty {
@@ -157,4 +157,12 @@
 }
 .empty2 {
     width: 90px;
+}
+
+
+.submitButtons{
+    margin: 0 24px;
+    padding: 12px;
+    display: flex;
+    
 }

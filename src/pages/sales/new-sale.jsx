@@ -781,6 +781,9 @@ export default function NewSale({ inventory_db, result_count }) {
                                     )}
                                 </div>
                             </form>
+                            <div className={styles.submitButtons}>
+                                <button>Record Sale</button>
+                            </div>
                         </div>
                     </div>
                 </main>
