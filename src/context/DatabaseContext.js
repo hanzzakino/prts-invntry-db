@@ -6,7 +6,7 @@ export const DatabaseContextWrapper = ({ children }) => {
    
     const addNewSale = async (data) => {
         try {
-            let response = await fetch('/api/post', {
+            let response = await fetch('/api/add-sale', {
                 method: 'POST',
                 body: JSON.stringify(data),
                 headers: {

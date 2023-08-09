@@ -7,6 +7,7 @@ export default async (req, res) => {
         const db = client.db('inventory-management')
 
         const post = await db.collection('sales-record').insertOne(req.body)
+        console.log('recorded')
 
         res.json(post)
     } catch (e) {

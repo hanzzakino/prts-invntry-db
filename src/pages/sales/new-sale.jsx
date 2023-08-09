@@ -7,10 +7,12 @@ import { useAuthContext } from '@/context/AuthContext'
 import { useRouter } from 'next/router'
 import { useSettingsContext } from '@/context/SettingsContext'
 import clientPromise from '@/lib/mongodb/mongodb'
+import { useDatabaseContext } from '@/context/DatabaseContext'
 
 export default function NewSale({ inventory_db, result_count }) {
     const router = useRouter()
     const { authUser, signOut, isLoading } = useAuthContext()
+    const { addNewSale } = useDatabaseContext()
     const { view } = useSettingsContext()
 
     useEffect(() => {
@@ -267,6 +269,26 @@ export default function NewSale({ inventory_db, result_count }) {
     const clearSearch = (e) => {
         e.preventDefault()
         setSearchText('')
+    }
+
+    const onSubmitClick = (currentAuthUser) => {
+        if (formContent.items.length > 0) {
+            const finalData = {
+                items: formContent.items,
+                contact_number: formContent.contact_number,
+                date_sold: new Date(Date.now()),
+                total_amount: formContent.total_amount,
+                total_paid: formContent.total_paid,
+                total_balance: formContent.total_balance,
+                recorded_by: currentAuthUser.username,
+                branch:
+                    currentAuthUser.access === 'admin'
+                        ? ''
+                        : currentAuthUser.branch,
+                customer_name: formContent.customer_name,
+            }
+            addNewSale(finalData)
+        }
     }
 
     return (
@@ -825,7 +847,13 @@ export default function NewSale({ inventory_db, result_count }) {
                                 </div>
                             </form>
                             <div className={styles.submitButtons}>
-                                <button>Record Sale</button>
+                                <button
+                                    onClick={() => {
+                                        onSubmitClick(authUser)
+                                    }}
+                                >
+                                    Record Sale
+                                </button>
                             </div>
                             <p>{JSON.stringify(formContent, null, 2)}</p>
                         </div>

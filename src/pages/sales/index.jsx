@@ -54,8 +54,9 @@ export default function Sales({ sales_db, result_count }) {
                         <div
                             key={i + 'abb'}
                             className={
-                                currentPage - pagrightlen + i === currentPage &&
-                                styles.selectedPage
+                                currentPage - pagrightlen + i === currentPage
+                                    ? styles.selectedPage
+                                    : ''
                             }
                         >
                             {currentPage - pagrightlen + i}
@@ -70,7 +71,9 @@ export default function Sales({ sales_db, result_count }) {
                 <a onClick={() => setCurrentPage(Number(i + 1))} key={i + 'a'}>
                     <div
                         key={i + 'abb'}
-                        className={i + 1 === currentPage && styles.selectedPage}
+                        className={
+                            i + 1 === currentPage ? styles.selectedPage : ''
+                        }
                     >
                         {i + 1}
                     </div>
@@ -122,9 +125,9 @@ export default function Sales({ sales_db, result_count }) {
                 className={
                     styles.tableDataRow +
                     ' ' +
-                    (data.stock === 0 && styles.noStock) +
+                    (data.stock === 0 ? styles.noStock : '') +
                     ' ' +
-                    (index % 2 === 0 && styles.alternateRowColor)
+                    (index % 2 === 0 ? styles.alternateRowColor : '')
                 }
             >
                 <td key={data.date_sold + index + '01'}>
