@@ -67,7 +67,7 @@ export default function NewSale({ inventory_db, result_count }) {
             total_balance: totalAmt - totalPd,
         }))
     }, [formContent.items])
-    const editQuantity = (e) => {
+    const quantityChange = (e) => {
         const dupls = formContent.items.filter(
             (im) => im.product_id === e.target.id
         )
@@ -101,7 +101,7 @@ export default function NewSale({ inventory_db, result_count }) {
             }))
         }
     }
-    const editPaid = (e) => {
+    const paidChange = (e) => {
         const dupls = formContent.items.filter(
             (im) => im.product_id === e.target.id
         )
@@ -128,7 +128,7 @@ export default function NewSale({ inventory_db, result_count }) {
             }))
         }
     }
-    const fullyPay = (e) => {
+    const fullyPaymentChange = (e) => {
         const dupls = formContent.items.filter(
             (im) => im.product_id === e.target.id
         )
@@ -147,7 +147,39 @@ export default function NewSale({ inventory_db, result_count }) {
             items: [...nondupls, newFromDupls],
         }))
     }
-    const isItemReturn = (e) => {
+    const paymnentMethodChange = (e) => {
+        const dupls = formContent.items.filter(
+            (im) => im.product_id === e.target.id
+        )
+        const nondupls = formContent.items.filter(
+            (im) => im.product_id !== e.target.id
+        )
+        const newFromDupls = {
+            ...dupls[0],
+            payment_method: e.target.value,
+        }
+        setFormContent((prevState) => ({
+            ...prevState,
+            items: [...nondupls, newFromDupls],
+        }))
+    }
+    const deliveryInfoChange = (e) => {
+        const dupls = formContent.items.filter(
+            (im) => im.product_id === e.target.id
+        )
+        const nondupls = formContent.items.filter(
+            (im) => im.product_id !== e.target.id
+        )
+        const newFromDupls = {
+            ...dupls[0],
+            delivery_info: e.target.value.toUpperCase(),
+        }
+        setFormContent((prevState) => ({
+            ...prevState,
+            items: [...nondupls, newFromDupls],
+        }))
+    }
+    const returnChange = (e) => {
         const dupls = formContent.items.filter(
             (im) => im.product_id === e.target.id
         )
@@ -210,7 +242,7 @@ export default function NewSale({ inventory_db, result_count }) {
                         cost: 0.0,
                         gross_income: 0.0,
                         payment_method: 'CASH',
-                        delivery_info: '',
+                        delivery_info: 'WALK-IN',
                     },
                 ],
             }))
@@ -344,9 +376,7 @@ export default function NewSale({ inventory_db, result_count }) {
                                         </div>
                                     )}
                                 </div>
-                                {/* <p>
-                                    {JSON.stringify(formContent.items, null, 4)}
-                                </p> */}
+
                                 <div className={styles.itemsContainer}>
                                     {formContent.total_amount !== 0 ? (
                                         <div
@@ -429,7 +459,7 @@ export default function NewSale({ inventory_db, result_count }) {
                                                         'itemlist2f'
                                                     }
                                                 >
-                                                    <p>{idx}</p>
+                                                    <p>{idx + 1}</p>
                                                 </div>
                                                 <div
                                                     className={styles.itemInfo}
@@ -527,7 +557,7 @@ export default function NewSale({ inventory_db, result_count }) {
                                                             }
                                                             id={item.product_id}
                                                             onChange={
-                                                                editQuantity
+                                                                quantityChange
                                                             }
                                                         />
                                                     </div>
@@ -547,7 +577,7 @@ export default function NewSale({ inventory_db, result_count }) {
                                                             }
                                                             id={item.product_id}
                                                             onChange={
-                                                                isItemReturn
+                                                                returnChange
                                                             }
                                                             type="checkbox"
                                                             checked={
@@ -592,7 +622,9 @@ export default function NewSale({ inventory_db, result_count }) {
                                                                 'itemlistC5A'
                                                             }
                                                             id={item.product_id}
-                                                            onChange={fullyPay}
+                                                            onChange={
+                                                                fullyPaymentChange
+                                                            }
                                                             type="checkbox"
                                                             checked={
                                                                 item.balance ===
@@ -621,7 +653,9 @@ export default function NewSale({ inventory_db, result_count }) {
                                                             step="0.01"
                                                             value={item.paid}
                                                             id={item.product_id}
-                                                            onChange={editPaid}
+                                                            onChange={
+                                                                paidChange
+                                                            }
                                                         />
                                                     </div>
                                                     <div
@@ -641,8 +675,12 @@ export default function NewSale({ inventory_db, result_count }) {
                                                             className={
                                                                 styles.method
                                                             }
-                                                            defaultValue={
-                                                                'CASH'
+                                                            value={
+                                                                item.payment_method
+                                                            }
+                                                            id={item.product_id}
+                                                            onChange={
+                                                                paymnentMethodChange
                                                             }
                                                         >
                                                             <option
@@ -670,15 +708,20 @@ export default function NewSale({ inventory_db, result_count }) {
                                                         }
                                                         className={styles.ic8}
                                                     >
-                                                        <p
+                                                        <input
                                                             key={
                                                                 item.product_id +
                                                                 idx +
-                                                                'itemlistC8A'
+                                                                'itemlistC8A1'
                                                             }
-                                                        >
-                                                            DELIVERY
-                                                        </p>
+                                                            id={item.product_id}
+                                                            value={
+                                                                item.delivery_info
+                                                            }
+                                                            onChange={
+                                                                deliveryInfoChange
+                                                            }
+                                                        />
                                                     </div>
                                                 </div>
                                             </div>
@@ -784,6 +827,7 @@ export default function NewSale({ inventory_db, result_count }) {
                             <div className={styles.submitButtons}>
                                 <button>Record Sale</button>
                             </div>
+                            <p>{JSON.stringify(formContent, null, 2)}</p>
                         </div>
                     </div>
                 </main>

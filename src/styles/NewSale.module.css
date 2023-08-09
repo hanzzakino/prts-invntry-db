@@ -58,8 +58,6 @@
     background-color: white;
     padding: 8px 24px;
     margin: 8px 0;
-   
-    
 }
 .itemsContainer {
     width: 100%;
@@ -143,6 +141,10 @@
 .ic8{
     width: 96px;
 }
+.ic8 > *{
+    width: 96px;
+}
+
 
 .returnsPayment {
     margin-right: 32px;
