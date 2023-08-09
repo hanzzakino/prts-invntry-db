@@ -80,8 +80,6 @@ export default function NewSale({ inventory_db, result_count }) {
             // console.log(dupls)
             const newFromDupls = {
                 ...dupls[0],
-                product_id: dupls[0].product_id,
-                type: dupls[0].type,
                 quantity:
                     Number(e.target.value) !== 0
                         ? Math.abs(Number(e.target.value))
@@ -143,6 +141,28 @@ export default function NewSale({ inventory_db, result_count }) {
             ...dupls[0],
             paid: e.target.checked ? dupls[0].amount : 0,
             balance: e.target.checked ? 0 : dupls[0].amount,
+        }
+        setFormContent((prevState) => ({
+            ...prevState,
+            items: [...nondupls, newFromDupls],
+        }))
+    }
+    const isItemReturn = (e) => {
+        const dupls = formContent.items.filter(
+            (im) => im.product_id === e.target.id
+        )
+        const nondupls = formContent.items.filter(
+            (im) => im.product_id !== e.target.id
+        )
+        const newFromDupls = {
+            ...dupls[0],
+            returns: e.target.checked ? dupls[0].quantity : 0,
+            amount: e.target.checked
+                ? -Math.abs(dupls[0].price * dupls[0].quantity)
+                : Math.abs(dupls[0].price * dupls[0].quantity),
+            balance: e.target.checked
+                ? -Math.abs(dupls[0].price * dupls[0].quantity)
+                : Math.abs(dupls[0].price * dupls[0].quantity),
         }
         setFormContent((prevState) => ({
             ...prevState,
@@ -327,188 +347,370 @@ export default function NewSale({ inventory_db, result_count }) {
                                 {/* <p>
                                     {JSON.stringify(formContent.items, null, 4)}
                                 </p> */}
-                                {formContent.total_amount !== 0 ? (
-                                    <div className={styles.itemContainer}>
-                                        <span>
-                                            <p>PRODUCT NAME</p>
-                                        </span>
-                                        <div className={styles.itemCost}>
-                                            <p className={styles.price}>
-                                                PRICE
-                                            </p>
-                                            <label> </label>
-                                            <span className={styles.qtyInput}>
-                                                QTY
-                                            </span>
-                                            <p className={styles.amount}>
-                                                AMOUNT
-                                            </p>
-                                            <span
-                                                className={styles.fullpayment}
-                                            ></span>
-                                            <span className={styles.payment}>
-                                                PAID
-                                            </span>
-                                            <span className={styles.method}>
-                                                METHOD
-                                            </span>
-                                            <div
-                                                className={styles.empty1}
-                                            ></div>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className={styles.itemContainer}>
-                                        <span>
-                                            <p>NO ITEM</p>
-                                        </span>
-                                    </div>
-                                )}
-                                {formContent.items
-                                    .sort((a, b) => {
-                                        let fa = a.product_id.toLowerCase(),
-                                            fb = b.product_id.toLowerCase()
-
-                                        if (fa < fb) {
-                                            return -1
-                                        }
-                                        if (fa > fb) {
-                                            return 1
-                                        }
-                                        return 0
-                                    })
-                                    .map((item, idx) => (
+                                <div className={styles.itemsContainer}>
+                                    {formContent.total_amount !== 0 ? (
                                         <div
-                                            className={styles.itemContainer}
-                                            key={
-                                                item.product_id +
-                                                idx +
-                                                'itemlist'
+                                            className={
+                                                styles.itemContainer +
+                                                ' ' +
+                                                styles.boldContents
                                             }
                                         >
-                                            <span
-                                                key={
-                                                    item.product_id +
-                                                    idx +
-                                                    'itemlist2a'
-                                                }
-                                            >
-                                                <p
-                                                    key={
-                                                        item.product_id +
-                                                        idx +
-                                                        'itemlist2'
-                                                    }
-                                                >
-                                                    {item.product_id}
-                                                    &nbsp;-&nbsp;
-                                                    {item.tempItemDetail.name}
-                                                    &nbsp;-&nbsp;
-                                                    {item.balance}
-                                                </p>
-                                            </span>
-                                            <div
-                                                key={
-                                                    item.product_id +
-                                                    idx +
-                                                    'itemlist2b'
-                                                }
-                                                className={styles.itemCost}
-                                            >
-                                                <p
-                                                    className={styles.price}
-                                                    key={
-                                                        item.product_id +
-                                                        idx +
-                                                        'itemlist3x'
-                                                    }
-                                                >
-                                                    {item.price}
-                                                </p>
-                                                <label
-                                                    htmlFor={item.product_id}
-                                                >
-                                                    x
-                                                </label>
-                                                <input
-                                                    className={styles.qtyInput}
-                                                    type="number"
-                                                    value={item.quantity}
-                                                    id={item.product_id}
-                                                    onChange={editQuantity}
-                                                />
-                                                <p
-                                                    className={styles.amount}
-                                                    key={
-                                                        item.product_id +
-                                                        idx +
-                                                        'itemlist3c'
-                                                    }
-                                                >
-                                                    {item.amount}
-                                                </p>
-                                                <input
-                                                    className={
-                                                        styles.fullpayment
-                                                    }
-                                                    id={item.product_id}
-                                                    onChange={fullyPay}
-                                                    type="checkbox"
-                                                    checked={item.balance === 0}
-                                                />
-                                                <input
-                                                    className={styles.payment}
-                                                    type="number"
-                                                    value={item.paid}
-                                                    id={item.product_id}
-                                                    onChange={editPaid}
-                                                />
-                                                <select
-                                                    className={styles.method}
-                                                    defaultValue={'CASH'}
-                                                >
-                                                    <option value={'CASH'}>
-                                                        CASH
-                                                    </option>
-                                                    <option value={'GCASH'}>
-                                                        GCASH
-                                                    </option>
-                                                    <option value={'OTHER'}>
-                                                        OTHER
-                                                    </option>
-                                                </select>
+                                            <div className={styles.itemInfo}>
+                                                <p>PRODUCT ID</p>
+                                            </div>
+                                            <div className={styles.itemCost}>
+                                                <div className={styles.ic1}>
+                                                    <p>PRICE</p>
+                                                </div>
+                                                <div className={styles.ic2}>
+                                                    <p>QTY</p>
+                                                </div>
+                                                <div className={styles.ic3}>
+                                                    <p>RETURN</p>
+                                                </div>
+                                                <div className={styles.ic4}>
+                                                    <p>AMOUNT</p>
+                                                </div>
+                                                <div className={styles.ic5}>
+                                                    <p></p>
+                                                </div>
+                                                <div className={styles.ic6}>
+                                                    PAID
+                                                </div>
+                                                <div className={styles.ic7}>
+                                                    <p>METHOD</p>
+                                                </div>
+                                                <div className={styles.ic8}>
+                                                    <p>DELIVERY</p>
+                                                </div>
                                             </div>
                                         </div>
-                                    ))}
-                                {formContent.total_amount !== 0 && (
-                                    <div className={styles.itemContainer}>
-                                        <span>
-                                            <p></p>
-                                        </span>
-                                        <div className={styles.itemCost}>
-                                            <p className={styles.price}></p>
-                                            <label></label>
-                                            <span className={styles.qtyInput}>
-                                                TOTAL:
-                                            </span>
-                                            <p className={styles.amount}>
-                                                {formContent.total_amount}
-                                            </p>
-                                            <span
-                                                className={styles.fullpayment}
-                                            ></span>
-                                            <span className={styles.payment}>
-                                                {formContent.total_paid}
-                                            </span>
-                                            <span
-                                                className={styles.method}
-                                            ></span>
-                                            <div
-                                                className={styles.empty2}
-                                            ></div>
+                                    ) : (
+                                        <div
+                                            className={
+                                                styles.itemContainerEmpty
+                                            }
+                                        >
+                                            <h2>NO ITEM</h2>
+                                            <p>Search Items to Add</p>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
+                                    {formContent.items
+                                        .sort((a, b) => {
+                                            let fa = a.product_id.toLowerCase(),
+                                                fb = b.product_id.toLowerCase()
+
+                                            if (fa < fb) {
+                                                return -1
+                                            }
+                                            if (fa > fb) {
+                                                return 1
+                                            }
+                                            return 0
+                                        })
+                                        .map((item, idx) => (
+                                            <div
+                                                className={styles.itemContainer}
+                                                key={
+                                                    item.product_id +
+                                                    idx +
+                                                    'itemlist'
+                                                }
+                                            >
+                                                <div
+                                                    className={styles.itemInfo}
+                                                    key={
+                                                        item.product_id +
+                                                        idx +
+                                                        'itemlist2a'
+                                                    }
+                                                >
+                                                    <span
+                                                        className={
+                                                            styles.itemName1
+                                                        }
+                                                        key={
+                                                            item.product_id +
+                                                            idx +
+                                                            'itemlistC1A'
+                                                        }
+                                                    >
+                                                        {item.product_id}
+                                                    </span>
+
+                                                    <span
+                                                        className={
+                                                            styles.itemName2
+                                                        }
+                                                        key={
+                                                            item.product_id +
+                                                            idx +
+                                                            'itemlistC1B'
+                                                        }
+                                                    >
+                                                        {
+                                                            item.tempItemDetail
+                                                                .name
+                                                        }
+                                                    </span>
+                                                </div>
+                                                <div
+                                                    key={
+                                                        item.product_id +
+                                                        idx +
+                                                        'itemlist2b'
+                                                    }
+                                                    className={styles.itemCost}
+                                                >
+                                                    <div
+                                                        key={
+                                                            item.product_id +
+                                                            idx +
+                                                            'itemlistC1'
+                                                        }
+                                                        className={styles.ic1}
+                                                    >
+                                                        <p
+                                                            key={
+                                                                item.product_id +
+                                                                idx +
+                                                                'itemlist3x'
+                                                            }
+                                                        >
+                                                            {item.price.toFixed(
+                                                                2
+                                                            )}
+                                                        </p>
+                                                    </div>
+                                                    <div
+                                                        key={
+                                                            item.product_id +
+                                                            idx +
+                                                            'itemlistC2'
+                                                        }
+                                                        className={styles.ic2}
+                                                    >
+                                                        <label
+                                                            key={
+                                                                item.product_id +
+                                                                idx +
+                                                                'itemlistC2A'
+                                                            }
+                                                            htmlFor={
+                                                                item.product_id
+                                                            }
+                                                        >
+                                                            x
+                                                        </label>
+                                                        <input
+                                                            key={
+                                                                item.product_id +
+                                                                idx +
+                                                                'itemlist2C2B'
+                                                            }
+                                                            type="number"
+                                                            value={
+                                                                item.quantity
+                                                            }
+                                                            id={item.product_id}
+                                                            onChange={
+                                                                editQuantity
+                                                            }
+                                                        />
+                                                    </div>
+                                                    <div
+                                                        key={
+                                                            item.product_id +
+                                                            idx +
+                                                            'itemlistC3'
+                                                        }
+                                                        className={styles.ic3}
+                                                    >
+                                                        <input
+                                                            key={
+                                                                item.product_id +
+                                                                idx +
+                                                                'itemlistC3A'
+                                                            }
+                                                            id={item.product_id}
+                                                            onChange={
+                                                                isItemReturn
+                                                            }
+                                                            type="checkbox"
+                                                            checked={
+                                                                item.returns !==
+                                                                    0 &&
+                                                                item.amount < 0
+                                                            }
+                                                        />
+                                                    </div>
+                                                    <div
+                                                        key={
+                                                            item.product_id +
+                                                            idx +
+                                                            'itemlistC4'
+                                                        }
+                                                        className={styles.ic4}
+                                                    >
+                                                        <p
+                                                            key={
+                                                                item.product_id +
+                                                                idx +
+                                                                'itemlist3c'
+                                                            }
+                                                        >
+                                                            {item.amount.toFixed(
+                                                                2
+                                                            )}
+                                                        </p>
+                                                    </div>
+                                                    <div
+                                                        key={
+                                                            item.product_id +
+                                                            idx +
+                                                            'itemlistC5'
+                                                        }
+                                                        className={styles.ic5}
+                                                    >
+                                                        <input
+                                                            key={
+                                                                item.product_id +
+                                                                idx +
+                                                                'itemlistC5A'
+                                                            }
+                                                            id={item.product_id}
+                                                            onChange={fullyPay}
+                                                            type="checkbox"
+                                                            checked={
+                                                                item.balance ===
+                                                                0
+                                                            }
+                                                        />
+                                                    </div>
+                                                    <div
+                                                        key={
+                                                            item.product_id +
+                                                            idx +
+                                                            'itemlistC6'
+                                                        }
+                                                        className={styles.ic6}
+                                                    >
+                                                        <input
+                                                            key={
+                                                                item.product_id +
+                                                                idx +
+                                                                'itemlistC6A'
+                                                            }
+                                                            className={
+                                                                styles.payment
+                                                            }
+                                                            type="number"
+                                                            step="0.01"
+                                                            value={item.paid}
+                                                            id={item.product_id}
+                                                            onChange={editPaid}
+                                                        />
+                                                    </div>
+                                                    <div
+                                                        key={
+                                                            item.product_id +
+                                                            idx +
+                                                            'itemlistC7'
+                                                        }
+                                                        className={styles.ic7}
+                                                    >
+                                                        <select
+                                                            key={
+                                                                item.product_id +
+                                                                idx +
+                                                                'itemlistC7A'
+                                                            }
+                                                            className={
+                                                                styles.method
+                                                            }
+                                                            defaultValue={
+                                                                'CASH'
+                                                            }
+                                                        >
+                                                            <option
+                                                                value={'CASH'}
+                                                            >
+                                                                CASH
+                                                            </option>
+                                                            <option
+                                                                value={'GCASH'}
+                                                            >
+                                                                GCASH
+                                                            </option>
+                                                            <option
+                                                                value={'OTHER'}
+                                                            >
+                                                                OTHER
+                                                            </option>
+                                                        </select>
+                                                    </div>
+                                                    <div
+                                                        key={
+                                                            item.product_id +
+                                                            idx +
+                                                            'itemlistC8'
+                                                        }
+                                                        className={styles.ic8}
+                                                    >
+                                                        <p
+                                                            key={
+                                                                item.product_id +
+                                                                idx +
+                                                                'itemlistC8A'
+                                                            }
+                                                        >
+                                                            DELIVERY
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    {formContent.total_amount !== 0 && (
+                                        <div className={styles.itemContainer}>
+                                            <div className={styles.itemInfo}>
+                                                <p></p>
+                                            </div>
+                                            <div className={styles.itemCost}>
+                                                <div className={styles.ic1}>
+                                                    <p></p>
+                                                </div>
+                                                <div className={styles.ic2}>
+                                                    <p>TOTAL:</p>
+                                                </div>
+                                                <div className={styles.ic3}>
+                                                    <p></p>
+                                                </div>
+                                                <div className={styles.ic4}>
+                                                    <p>
+                                                        {
+                                                            formContent.total_amount
+                                                        }
+                                                    </p>
+                                                </div>
+                                                <div className={styles.ic5}>
+                                                    <p></p>
+                                                </div>
+                                                <div className={styles.ic6}>
+                                                    <p>
+                                                        {formContent.total_paid}
+                                                    </p>
+                                                </div>
+                                                <div className={styles.ic7}>
+                                                    <p></p>
+                                                </div>
+                                                <div className={styles.ic8}>
+                                                    <p></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </form>
                         </div>
                     </div>
