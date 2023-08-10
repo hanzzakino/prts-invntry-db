@@ -2,7 +2,7 @@ import styles from '@/styles/NewSale.module.css'
 import Head from 'next/head'
 import generalInfo from '../../../general-info'
 import Navbar from '@/components/Navbar'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useAuthContext } from '@/context/AuthContext'
 import { useRouter } from 'next/router'
 import { useSettingsContext } from '@/context/SettingsContext'
@@ -256,7 +256,9 @@ export default function NewSale({ inventory_db, result_count }) {
             router.push({
                 pathname: '/sales/new-sale',
                 query: {
-                    ...(searchText && { search: searchText }),
+                    ...(searchText && {
+                        search: searchText === 'EMPTY_SEARCH' ? '' : searchText,
+                    }),
                 },
             })
         } catch (e) {
@@ -270,10 +272,19 @@ export default function NewSale({ inventory_db, result_count }) {
         e.preventDefault()
         setSearchText('')
     }
+    const ref = useRef(null)
+    const firstItemAdd = (e) => {
+        e.preventDefault()
+        setSearchText('EMPTY_SEARCH')
+        ref.current.focus()
+    }
 
     const onSubmitClick = (currentAuthUser) => {
         try {
-            if (formContent.items.length > 0) {
+            if (
+                formContent.items.length > 0 &&
+                formContent.customer_name !== ''
+            ) {
                 const finalData = {
                     items: formContent.items,
                     contact_number: formContent.contact_number,
@@ -326,7 +337,7 @@ export default function NewSale({ inventory_db, result_count }) {
                                 </h1>
                                 <h2>{dateNow.toDateString()}</h2>
                             </div>
-                            <button onClick={onReset}>Reset Form</button>
+
                             <form className={styles.formContainer}>
                                 <h2>Customer Info</h2>
                                 <div className={styles.formGroupRow}>
@@ -352,8 +363,13 @@ export default function NewSale({ inventory_db, result_count }) {
                                 >
                                     <p>Search Item: </p>
                                     <input
+                                        ref={ref}
                                         className={styles.searchInput}
-                                        value={searchText}
+                                        value={
+                                            searchText === 'EMPTY_SEARCH'
+                                                ? ''
+                                                : searchText
+                                        }
                                         onChange={searchTextChange}
                                         placeholder="Search"
                                         type="text"
@@ -365,17 +381,21 @@ export default function NewSale({ inventory_db, result_count }) {
                                         Clear Search
                                     </button>
 
-                                    {result_count !== 0 && (
+                                    {result_count !== 0 ? (
                                         <div
                                             className={
                                                 styles.searchResultsContainer +
                                                 ' ' +
-                                                (!viewResults &&
-                                                    styles.hiddenResults)
+                                                styles.itemBox +
+                                                ' ' +
+                                                (!viewResults
+                                                    ? styles.hiddenResults
+                                                    : '')
                                             }
                                         >
                                             {inventory_db.map((itm, idx) => (
                                                 <div
+                                                    className={styles.itemBox}
                                                     key={
                                                         idx +
                                                         itm.product_id +
@@ -412,6 +432,8 @@ export default function NewSale({ inventory_db, result_count }) {
                                                 </div>
                                             ))}
                                         </div>
+                                    ) : (
+                                        <></>
                                     )}
                                 </div>
 
@@ -464,7 +486,9 @@ export default function NewSale({ inventory_db, result_count }) {
                                             }
                                         >
                                             <h2>NO ITEM</h2>
-                                            <p>Search Items to Add</p>
+                                            <button onClick={firstItemAdd}>
+                                                Add Item
+                                            </button>
                                         </div>
                                     )}
                                     {formContent.items
@@ -482,7 +506,11 @@ export default function NewSale({ inventory_db, result_count }) {
                                         })
                                         .map((item, idx) => (
                                             <div
-                                                className={styles.itemContainer}
+                                                className={
+                                                    styles.itemContainer +
+                                                    ' ' +
+                                                    styles.itemBox
+                                                }
                                                 key={
                                                     item.product_id +
                                                     idx +
@@ -767,7 +795,13 @@ export default function NewSale({ inventory_db, result_count }) {
                                     {formContent.total_amount !== 0 && (
                                         <>
                                             <div
-                                                className={styles.itemContainer}
+                                                className={
+                                                    styles.itemContainer +
+                                                    ' ' +
+                                                    styles.boldContents +
+                                                    ' ' +
+                                                    styles.borderTop
+                                                }
                                             >
                                                 <div className={styles.itemNo}>
                                                     <p></p>
@@ -815,7 +849,11 @@ export default function NewSale({ inventory_db, result_count }) {
                                                 </div>
                                             </div>
                                             <div
-                                                className={styles.itemContainer}
+                                                className={
+                                                    styles.itemContainer +
+                                                    ' ' +
+                                                    styles.boldContents
+                                                }
                                             >
                                                 <div className={styles.itemNo}>
                                                     <p></p>
@@ -863,15 +901,22 @@ export default function NewSale({ inventory_db, result_count }) {
                                 </div>
                             </form>
                             <div className={styles.submitButtons}>
-                                <button
-                                    onClick={() => {
-                                        onSubmitClick(authUser)
-                                    }}
-                                >
-                                    Record Sale
-                                </button>
+                                <div>
+                                    <button onClick={onReset}>
+                                        Reset Form
+                                    </button>
+                                </div>
+                                <div>
+                                    <button
+                                        onClick={() => {
+                                            onSubmitClick(authUser)
+                                        }}
+                                    >
+                                        Record Sale
+                                    </button>
+                                </div>
                             </div>
-                            <p>{JSON.stringify(formContent, null, 2)}</p>
+                            {/* <p>{JSON.stringify(formContent, null, 2)}</p> */}
                         </div>
                     </div>
                 </main>

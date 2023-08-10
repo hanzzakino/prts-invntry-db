@@ -3,7 +3,7 @@
     flex-direction: column;
     width: 100%;
     position: relative;
-    background-color: aquamarine;
+    /* background-color: aquamarine; */
 }
 .titleContainer {
     display: flex;
@@ -11,7 +11,14 @@
     padding: 0 24px;
     flex-direction: row;
 }
-
+.borderTop {
+    border-top: 2px solid black;
+}
+.itemBox {
+    border: 0.5px solid rgba(0,0,0,0.2);
+    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.2));
+    border-radius: 4px;
+}
 .formContainer {
     display: flex;
     flex-direction: column;
@@ -19,10 +26,23 @@
     padding: 12px;
     
 }
-
+.formContainer input {
+    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.1));
+    border: 0.5px solid rgba(0,0,0,0.2);
+    border-radius: 4px;
+    padding: 6px 4px;
+}
+.formContainer select {
+    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.1));
+    border: 0.5px solid rgba(0,0,0,0.2);
+    border-radius: 4px;
+}
 .formGroupRow {
     display: flex;
     flex-direction: row;
+}
+.formGroupRow > input {
+    margin-right: 24px;
 }
 
 .searchInput {
@@ -34,6 +54,7 @@
     background-color: white;
     padding: 12px 24px;
     width: fit-content;
+    z-index: 2;
 }
 .searchResultsContainer > div {
     display: flex;
@@ -58,11 +79,13 @@
     background-color: white;
     padding: 8px 24px;
     margin: 8px 0;
+    min-width: max-content;
 }
 .itemsContainer {
     width: 100%;
-    padding-bottom: 8px;
+    padding: 0 12px 8px 12px;
     overflow-x: scroll;
+    
 }
 .itemContainerEmpty {
     width: 100%;
@@ -98,6 +121,10 @@
 .boldContents > * {
     font-weight: bold;
 }
+.flexEnd {
+    display: flex;
+    flex-direction: row;
+}
 .itemCost {
     display: flex;
     flex-direction: row;
@@ -120,6 +147,7 @@
 }
 .ic3{
     width: 72px;
+    padding-right: 12px;
     display: flex;
     justify-content: center;align-items: center;
 }
@@ -166,5 +194,6 @@
     margin: 0 24px;
     padding: 12px;
     display: flex;
-    
+    flex-direction: row;
+    align-items: center;justify-content: space-between;
 }
