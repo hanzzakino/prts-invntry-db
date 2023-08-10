@@ -174,7 +174,7 @@ export default function NewSale({ inventory_db, result_count }) {
         )
         const newFromDupls = {
             ...dupls[0],
-            delivery_info: e.target.value.toUpperCase(),
+            delivery: e.target.value.toUpperCase(),
         }
         setFormContent((prevState) => ({
             ...prevState,
@@ -244,7 +244,7 @@ export default function NewSale({ inventory_db, result_count }) {
                         cost: 0.0,
                         gross_income: 0.0,
                         payment_method: 'CASH',
-                        delivery_info: 'WALK-IN',
+                        delivery: 'WALK-IN',
                     },
                 ],
             }))
@@ -272,22 +272,38 @@ export default function NewSale({ inventory_db, result_count }) {
     }
 
     const onSubmitClick = (currentAuthUser) => {
-        if (formContent.items.length > 0) {
-            const finalData = {
-                items: formContent.items,
-                contact_number: formContent.contact_number,
-                date_sold: Number(new Date(Date.now()).getTime()),
-                total_amount: formContent.total_amount,
-                total_paid: formContent.total_paid,
-                total_balance: formContent.total_balance,
-                recorded_by: currentAuthUser.username,
-                branch:
-                    currentAuthUser.access === 'admin'
-                        ? ''
-                        : currentAuthUser.branch,
-                customer_name: formContent.customer_name,
+        try {
+            if (formContent.items.length > 0) {
+                const finalData = {
+                    items: formContent.items,
+                    contact_number: formContent.contact_number,
+                    date_sold: Number(new Date(Date.now()).getTime()),
+                    total_amount: formContent.total_amount,
+                    total_paid: formContent.total_paid,
+                    total_balance: formContent.total_balance,
+                    recorded_by: currentAuthUser.username,
+                    branch:
+                        currentAuthUser.access === 'admin'
+                            ? ''
+                            : currentAuthUser.branch,
+                    customer_name: formContent.customer_name,
+                }
+                addNewSale(finalData)
             }
-            addNewSale(finalData)
+        } catch (e) {
+            console.log(e)
+        } finally {
+            setFormContent({
+                items: [],
+                contact_number: '',
+                date_sold: null,
+                total_amount: 0.0,
+                total_paid: 0.0,
+                total_balance: 0.0,
+                recorded_by: '',
+                customer_name: '',
+            })
+            setSearchText('')
         }
     }
 
@@ -738,7 +754,7 @@ export default function NewSale({ inventory_db, result_count }) {
                                                             }
                                                             id={item.product_id}
                                                             value={
-                                                                item.delivery_info
+                                                                item.delivery
                                                             }
                                                             onChange={
                                                                 deliveryInfoChange
