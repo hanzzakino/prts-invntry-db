@@ -276,7 +276,7 @@ export default function NewSale({ inventory_db, result_count }) {
             const finalData = {
                 items: formContent.items,
                 contact_number: formContent.contact_number,
-                date_sold: new Date(Date.now()),
+                date_sold: Number(new Date(Date.now()).getTime()),
                 total_amount: formContent.total_amount,
                 total_paid: formContent.total_paid,
                 total_balance: formContent.total_balance,
