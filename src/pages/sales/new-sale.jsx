@@ -209,22 +209,24 @@ export default function NewSale({ inventory_db, result_count }) {
         )
         if (dupls.length > 0) {
             // console.log('duplicate')
-            const nondupls = formContent.items.filter(
-                (im) => im.product_id !== item.product_id
-            )
-            // console.log(dupls)
-            const newFromDupls = {
-                ...dupls[0],
-                product_id: dupls[0].product_id,
-                type: dupls[0].type,
-                quantity: dupls[0].quantity + 1,
-                amount: item.store_price * (dupls[0].quantity + 1),
-                balance: item.store_price * (dupls[0].quantity + 1),
+            if (dupls[0].quantity + 1 <= dupls[0].tempItemDetail.stock) {
+                const nondupls = formContent.items.filter(
+                    (im) => im.product_id !== item.product_id
+                )
+                // console.log(dupls)
+                const newFromDupls = {
+                    ...dupls[0],
+                    product_id: dupls[0].product_id,
+                    type: dupls[0].type,
+                    quantity: dupls[0].quantity + 1,
+                    amount: item.store_price * (dupls[0].quantity + 1),
+                    balance: item.store_price * (dupls[0].quantity + 1),
+                }
+                setFormContent((prevState) => ({
+                    ...prevState,
+                    items: [...nondupls, newFromDupls],
+                }))
             }
-            setFormContent((prevState) => ({
-                ...prevState,
-                items: [...nondupls, newFromDupls],
-            }))
         } else {
             setFormContent((prevState) => ({
                 ...prevState,
