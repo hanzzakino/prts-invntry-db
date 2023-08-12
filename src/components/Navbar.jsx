@@ -45,18 +45,18 @@ export default function Navbar() {
                     >
                         Sales Record
                     </button>
-                    <button>Purchases Record</button>
-                    <button>Expenses Record</button>
+                    <button disabled>Purchases Record</button>
+                    <button disabled>Expenses Record</button>
                 </div>
                 <div className={styles.navbarViews}>
                     <button onClick={() => router.push('/sales/new-sale')}>
                         New Sale
                     </button>
-                    <button>New Purchase</button>
-                    <button>New Expense</button>
+                    <button disabled>New Purchase</button>
+                    <button disabled>New Expense</button>
                 </div>
                 <div className={styles.navbarFooter}>
-                    <button>Settings</button>
+                    <button disabled>Settings</button>
                     <button onClick={signOut}>Logout</button>
                 </div>
             </nav>

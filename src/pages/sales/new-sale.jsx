@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 import { useSettingsContext } from '@/context/SettingsContext'
 import clientPromise from '@/lib/mongodb/mongodb'
 import { useDatabaseContext } from '@/context/DatabaseContext'
+import { BsTrash2 } from 'react-icons/bs'
 
 export default function NewSale({ inventory_db, result_count }) {
     const router = useRouter()
@@ -252,7 +253,15 @@ export default function NewSale({ inventory_db, result_count }) {
             }))
         }
     }
-
+    const deleteItem = (e) => {
+        const nondupls = formContent.items.filter(
+            (im) => im.product_id !== e.target.id
+        )
+        setFormContent((prevState) => ({
+            ...prevState,
+            items: [...nondupls],
+        }))
+    }
     useEffect(() => {
         try {
             router.push({
@@ -331,12 +340,7 @@ export default function NewSale({ inventory_db, result_count }) {
                     <div className="mainContainer">
                         <div className={styles.container}>
                             <div className={styles.titleContainer}>
-                                <h1>
-                                    New Sale - {result_count} -{' '}
-                                    {formContent.total_amount}-{' '}
-                                    {formContent.total_balance}-{' '}
-                                    {formContent.total_paid}
-                                </h1>
+                                <h1>New Sale</h1>
                                 <h2>{dateNow.toDateString()}</h2>
                             </div>
 
@@ -790,6 +794,14 @@ export default function NewSale({ inventory_db, result_count }) {
                                                                 deliveryInfoChange
                                                             }
                                                         />
+                                                    </div>
+                                                    <div className={styles.ic9}>
+                                                        <button
+                                                            id={item.product_id}
+                                                            onClick={deleteItem}
+                                                        >
+                                                            &times;
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>

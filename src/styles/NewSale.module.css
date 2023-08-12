@@ -189,6 +189,17 @@
 .ic8 > *{
     width: 96px;
 }
+.ic9 {
+    width: 48px;
+}
+.ic9 button{
+    background-color: rgb(255, 254, 254) !important;
+    border: none;
+    margin-left: 4px;
+}
+.ic9 button:hover{
+    background-color: rgb(255, 163, 163) !important; 
+}
 
 
 .returnsPayment {
