@@ -13,7 +13,7 @@ import { BsTrash2 } from 'react-icons/bs'
 export default function NewSale({ inventory_db, result_count }) {
     const router = useRouter()
     const { authUser, signOut, isLoading } = useAuthContext()
-    const { addNewSale } = useDatabaseContext()
+    const { addSale, updateInventory } = useDatabaseContext()
     const { view } = useSettingsContext()
 
     useEffect(() => {
@@ -310,7 +310,14 @@ export default function NewSale({ inventory_db, result_count }) {
                             : currentAuthUser.branch,
                     customer_name: formContent.customer_name,
                 }
-                addNewSale(finalData)
+                addSale(finalData)
+                formContent.items.forEach((itm) => {
+                    const newStock = itm.tempItemDetail.stock - itm.quantity
+                    const newStockData = {
+                        stock: newStock,
+                    }
+                    updateInventory(newStockData, itm.tempItemDetail._id)
+                })
             }
         } catch (e) {
             console.log(e)

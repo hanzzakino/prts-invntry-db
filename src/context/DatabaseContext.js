@@ -5,7 +5,7 @@ const DatabaseContext = createContext()
 
 export const DatabaseContextWrapper = ({ children }) => {
    
-    const addNewSale = async (data) => {
+    const addSale = async (data) => {
         NProgress.start()
         try {
             let response = await fetch('/api/add-sale', {
@@ -23,11 +23,27 @@ export const DatabaseContextWrapper = ({ children }) => {
             NProgress.done()
         }
     }
+    const updateInventory = async (data, id) => {
+        try {
+            let response = await fetch('/api/update-inventory?id=' + id, {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    Accept: 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json',
+                },
+            })
+            response = await response.json()
+        } catch (e) {
+            console.log(e)
+        }
+    }
 
     return (
         <DatabaseContext.Provider
             value={{
-                addNewSale
+                addSale,
+                updateInventory
             }}
         >
             {children}
