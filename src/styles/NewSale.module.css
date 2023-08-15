@@ -97,6 +97,7 @@
     padding: 8px 24px;
     margin: 8px 0;
     min-width: max-content;
+
 }
 .itemsContainer {
     width: 100%;
@@ -128,6 +129,7 @@
     font-size: 1rem;
     width: 30%;
     padding-right: 32px;
+    
 }
 .itemInfo > .itemName1{
     font-weight: bold;
@@ -148,6 +150,7 @@
     font-size: 1.1rem;
     width: 70%;
     align-items: center;
+    justify-content: flex-end;
 }
 .ic1{
     width: 84px;
