@@ -578,6 +578,9 @@ export default function NewSale({ inventory_db, result_count }) {
                                                 <div className={styles.ic8}>
                                                     <p>DELIVERY</p>
                                                 </div>
+                                                <div
+                                                    className={styles.ic9}
+                                                ></div>
                                             </div>
                                         </div>
                                     ) : (
@@ -958,6 +961,9 @@ export default function NewSale({ inventory_db, result_count }) {
                                                     <div className={styles.ic8}>
                                                         <p></p>
                                                     </div>
+                                                    <div
+                                                        className={styles.ic9}
+                                                    ></div>
                                                 </div>
                                             </div>
                                             <div
@@ -1006,6 +1012,9 @@ export default function NewSale({ inventory_db, result_count }) {
                                                     <div className={styles.ic8}>
                                                         <p></p>
                                                     </div>
+                                                    <div
+                                                        className={styles.ic9}
+                                                    ></div>
                                                 </div>
                                             </div>
                                         </>
