@@ -41,6 +41,7 @@ export const DatabaseContextWrapper = ({ children }) => {
         toast.success('Reset Done')
     }
     const onSubmitClick = (currentAuthUser) => {
+        let status = ''
         try {
             if (
                 formContent.items.length > 0 &&
@@ -71,6 +72,7 @@ export const DatabaseContextWrapper = ({ children }) => {
                     updateInventory(newStockData, itm.tempItemDetail._id)
                 })
                 toast.success('Sale Recorded')
+                status = 'success'
             } else {
                 toast.warn('Fill all input')
             }
@@ -78,16 +80,17 @@ export const DatabaseContextWrapper = ({ children }) => {
             console.log(e)
             toast.error(e)
         } finally {
-            setFormContent({
-                items: [],
-                contact_number: '',
-                date_sold: null,
-                total_amount: 0.0,
-                total_paid: 0.0,
-                total_balance: 0.0,
-                recorded_by: '',
-                customer_name: '',
-            })
+            if (status === 'success')
+                setFormContent({
+                    items: [],
+                    contact_number: '',
+                    date_sold: null,
+                    total_amount: 0.0,
+                    total_paid: 0.0,
+                    total_balance: 0.0,
+                    recorded_by: '',
+                    customer_name: '',
+                })
         }
     }
 
