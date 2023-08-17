@@ -1,10 +1,10 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import NProgress from 'nprogress'
+import { toast } from 'react-toastify'
 
 const DatabaseContext = createContext()
 
 export const DatabaseContextWrapper = ({ children }) => {
-
     const [formContent, setFormContent] = useState({
         items: [],
         contact_number: '',
@@ -38,7 +38,7 @@ export const DatabaseContextWrapper = ({ children }) => {
             recorded_by: '',
             customer_name: '',
         })
-       
+        toast.success('Reset Done')
     }
     const onSubmitClick = (currentAuthUser) => {
         try {
@@ -70,9 +70,13 @@ export const DatabaseContextWrapper = ({ children }) => {
                     }
                     updateInventory(newStockData, itm.tempItemDetail._id)
                 })
+                toast.success('Sale Recorded')
+            } else {
+                toast.warn('Fill all input')
             }
         } catch (e) {
             console.log(e)
+            toast.error(e)
         } finally {
             setFormContent({
                 items: [],
@@ -84,10 +88,9 @@ export const DatabaseContextWrapper = ({ children }) => {
                 recorded_by: '',
                 customer_name: '',
             })
-            
         }
     }
-   
+
     const addSale = async (data) => {
         NProgress.start()
         try {
@@ -130,7 +133,7 @@ export const DatabaseContextWrapper = ({ children }) => {
                 formContent,
                 setFormContent,
                 onFormReset,
-                onSubmitClick
+                onSubmitClick,
             }}
         >
             {children}
