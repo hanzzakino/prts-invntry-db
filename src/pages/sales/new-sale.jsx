@@ -78,12 +78,13 @@ export default function NewSale({ inventory_db, result_count }) {
                                   ? Math.abs(Number(e.target.value))
                                   : 1)
                       ),
-                      balance: -Math.abs(
-                          dupls[0].price *
-                              (Number(e.target.value) !== 0
-                                  ? Math.abs(Number(e.target.value))
-                                  : 1)
-                      ),
+                      balance:
+                          -Math.abs(
+                              dupls[0].price *
+                                  (Number(e.target.value) !== 0
+                                      ? Math.abs(Number(e.target.value))
+                                      : 1)
+                          ) - dupls[0].paid,
                   }
                 : {
                       ...dupls[0],
@@ -98,9 +99,10 @@ export default function NewSale({ inventory_db, result_count }) {
                               : 1),
                       balance:
                           dupls[0].price *
-                          (Number(e.target.value) !== 0
-                              ? Math.abs(Number(e.target.value))
-                              : 1),
+                              (Number(e.target.value) !== 0
+                                  ? Math.abs(Number(e.target.value))
+                                  : 1) -
+                          dupls[0].paid,
                   }
             setFormContent((prevState) => ({
                 ...prevState,
@@ -200,8 +202,8 @@ export default function NewSale({ inventory_db, result_count }) {
                 ? -Math.abs(dupls[0].price * dupls[0].quantity)
                 : Math.abs(dupls[0].price * dupls[0].quantity),
             balance: e.target.checked
-                ? -Math.abs(dupls[0].price * dupls[0].quantity)
-                : Math.abs(dupls[0].price * dupls[0].quantity),
+                ? -Math.abs(dupls[0].price * dupls[0].quantity) - dupls[0].paid
+                : Math.abs(dupls[0].price * dupls[0].quantity) - dupls[0].paid,
         }
         setFormContent((prevState) => ({
             ...prevState,

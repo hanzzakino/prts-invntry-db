@@ -12,6 +12,10 @@
     flex-direction: row;
 }
 
+.wrongBalance {
+    background-color: rgb(255, 104, 104);
+}
+
 .controlContainer {
     display: flex;
     justify-content: flex-start;

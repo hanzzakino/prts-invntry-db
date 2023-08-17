@@ -152,14 +152,30 @@ export default function Sales({ sales_db, result_count }) {
                 <td key={data.items.change_item + index + '08'}>
                     {data.items.change_item}
                 </td>
-                <td key={data.items.return_item + index + '09'}>
-                    {data.items.return_item}
+                <td
+                    className={
+                        data.items.returns !== data.items.quantity &&
+                        data.items.returns > 0
+                            ? styles.wrongBalance
+                            : ''
+                    }
+                    key={data.items.returns + index + '09'}
+                >
+                    {data.items.returns}
                 </td>
                 <td key={data.items.amount + index + '0a'}>
                     {data.items.amount}
                 </td>
                 <td key={data.items.paid + index + '0b'}>{data.items.paid}</td>
-                <td key={data.items.balance + index + '0c'}>
+                <td
+                    className={
+                        data.items.balance !==
+                        data.items.amount - data.items.paid
+                            ? styles.wrongBalance
+                            : ''
+                    }
+                    key={data.items.balance + index + '0c'}
+                >
                     {data.items.balance}
                 </td>
                 <td key={data.items.cost + index + '0d'}>{data.items.cost}</td>
@@ -442,11 +458,11 @@ export default function Sales({ sales_db, result_count }) {
                                             <th colSpan={1}>
                                                 <span
                                                     onClick={sortClick}
-                                                    id="items.return_item"
+                                                    id="items.returns"
                                                 >
                                                     RI
                                                     {sorter.sort ===
-                                                    'items.return_item' ? (
+                                                    'items.returns' ? (
                                                         sorter.asc === -1 ? (
                                                             <BsFillCaretUpFill id="caretIcon" />
                                                         ) : (
