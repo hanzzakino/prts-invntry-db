@@ -13,63 +13,40 @@ import { BsTrash2 } from 'react-icons/bs'
 export default function NewSale({ inventory_db, result_count }) {
     const router = useRouter()
     const { authUser, signOut, isLoading } = useAuthContext()
-    const { addSale, updateInventory } = useDatabaseContext()
-    const { view } = useSettingsContext()
-
+    // const { view } = useSettingsContext()
     useEffect(() => {
         if (!authUser) {
             router.push('/user/login')
         }
     }, [authUser]) // eslint-disable-line react-hooks/exhaustive-deps
 
+    const { formContent, setFormContent, onFormReset, onSubmitClick } =
+        useDatabaseContext()
+    const { contact_number, customer_name } = formContent
     const [dateNow, setDateNow] = useState(new Date(Date.now()))
     const [viewResults, setViewResults] = useState(false)
     const [searchText, setSearchText] = useState('')
-    const [formContent, setFormContent] = useState({
-        items: [],
-        contact_number: '',
-        date_sold: null,
-        total_amount: 0.0,
-        total_paid: 0.0,
-        total_balance: 0.0,
-        recorded_by: '',
-        customer_name: '',
-    })
-    const { contact_number, customer_name } = formContent
+    useEffect(() => {
+        try {
+            router.push({
+                pathname: '/sales/new-sale',
+                query: {
+                    ...(searchText && {
+                        search: searchText === 'EMPTY_SEARCH' ? '' : searchText,
+                    }),
+                },
+            })
+        } catch (e) {
+            console.log(e)
+        }
+    }, [searchText]) // eslint-disable-line react-hooks/exhaustive-deps
+
     const onCustomerChange = (e) => {
         setFormContent((prevState) => ({
             ...prevState,
             [e.target.id]: e.target.value,
         }))
     }
-    const onReset = () => {
-        setFormContent({
-            items: [],
-            contact_number: '',
-            date_sold: null,
-            total_amount: 0.0,
-            total_paid: 0.0,
-            total_balance: 0.0,
-            recorded_by: '',
-            customer_name: '',
-        })
-        setSearchText('')
-    }
-    // const editItem = (item_pid) => {
-    //     let itmToEdit = formContent.items.filter(itm => itm.product_id===item_pid)
-    // }
-    useEffect(() => {
-        let totalAmt = 0
-        formContent.items.forEach((itm) => (totalAmt += itm.amount))
-        let totalPd = 0
-        formContent.items.forEach((itm) => (totalPd += itm.paid))
-        setFormContent((prevState) => ({
-            ...prevState,
-            total_amount: totalAmt,
-            total_paid: totalPd,
-            total_balance: totalAmt - totalPd,
-        }))
-    }, [formContent.items])
     const quantityChange = (e) => {
         const dupls = formContent.items.filter(
             (im) => im.product_id === e.target.id
@@ -231,6 +208,7 @@ export default function NewSale({ inventory_db, result_count }) {
             items: [...nondupls, newFromDupls],
         }))
     }
+
     const addNewItem = (item) => {
         const dupls = formContent.items.filter(
             (im) => im.product_id === item.product_id
@@ -341,20 +319,7 @@ export default function NewSale({ inventory_db, result_count }) {
             items: [...nondupls],
         }))
     }
-    useEffect(() => {
-        try {
-            router.push({
-                pathname: '/sales/new-sale',
-                query: {
-                    ...(searchText && {
-                        search: searchText === 'EMPTY_SEARCH' ? '' : searchText,
-                    }),
-                },
-            })
-        } catch (e) {
-            console.log(e)
-        }
-    }, [searchText]) // eslint-disable-line react-hooks/exhaustive-deps
+
     const searchTextChange = (e) => {
         setSearchText(e.target.value.toUpperCase())
     }
@@ -367,54 +332,6 @@ export default function NewSale({ inventory_db, result_count }) {
         e.preventDefault()
         setSearchText('EMPTY_SEARCH')
         ref.current.focus()
-    }
-
-    const onSubmitClick = (currentAuthUser) => {
-        try {
-            if (
-                formContent.items.length > 0 &&
-                formContent.customer_name !== ''
-            ) {
-                const finalData = {
-                    items: formContent.items,
-                    contact_number: formContent.contact_number,
-                    date_sold: Number(new Date(Date.now()).getTime()),
-                    total_amount: formContent.total_amount,
-                    total_paid: formContent.total_paid,
-                    total_balance: formContent.total_balance,
-                    recorded_by: currentAuthUser.username,
-                    branch:
-                        currentAuthUser.access === 'admin'
-                            ? ''
-                            : currentAuthUser.branch,
-                    customer_name: formContent.customer_name,
-                }
-                addSale(finalData)
-                formContent.items.forEach((itm) => {
-                    const newStockData = {
-                        stock:
-                            itm.returns > 0
-                                ? itm.tempItemDetail.stock + itm.returns
-                                : itm.tempItemDetail.stock - itm.quantity,
-                    }
-                    updateInventory(newStockData, itm.tempItemDetail._id)
-                })
-            }
-        } catch (e) {
-            console.log(e)
-        } finally {
-            setFormContent({
-                items: [],
-                contact_number: '',
-                date_sold: null,
-                total_amount: 0.0,
-                total_paid: 0.0,
-                total_balance: 0.0,
-                recorded_by: '',
-                customer_name: '',
-            })
-            setSearchText('')
-        }
     }
 
     return (
@@ -1023,7 +940,7 @@ export default function NewSale({ inventory_db, result_count }) {
                             </form>
                             <div className={styles.submitButtons}>
                                 <div>
-                                    <button onClick={onReset}>
+                                    <button onClick={onFormReset}>
                                         Reset Form
                                     </button>
                                 </div>
